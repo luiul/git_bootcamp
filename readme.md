@@ -61,7 +61,7 @@ Git is a version control system. Version control is software that tracks and man
 - `git revert`: revert a commit
 - `git stash`: stash changes
 - `git stash pop`: pop the most recent stash
-- `git stash list`: list all stashes
+- `git stash list`: list all stashesexit
 - `git stash clear`: clear all stashes
 - `git config --global alias.<ALIAS_NAME> <COMMAND>`: create a custom alias
 - `git rebase <BRANCH_NAME>`: rebase a branch onto the current branch
