@@ -35,7 +35,7 @@ Collection of notes and exercises for learning how to use Git and Github.
 
 ## 1. Git Core
 
-Git is a version control system. Version control is software that tracks and manages changes to files over time. Version control systems generally allow users to review previous versions of files, compare changes between versions, revert changes, etc.
+Git is a version control system. Version control is software that tracks and manages changes to files over time. Version control systems generally allow users to review previous versions of files, compare changes between versions, revert changes, etc. To set up and configure git, see [here](https://git-scm.com/book/en/v2/Appendix-C%3A-Git-Commands-Setup-and-Config)
 
 
 ## Important commands
