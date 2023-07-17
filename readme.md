@@ -37,6 +37,35 @@ Also, it's important to note that we can move to a specific page without using a
    git commit --amend
    ```
 
+- Create a new branch based on the current `HEAD` and switch to it. Historically, `git checkout` was used to switch branches, but it's now recommended to use `git switch` instead:
+
+   ```shell
+   git branch <branch name>
+   git switch <branch name>
+   ```
+
+   Note that you can do both in one command:
+
+   ```shell
+   git switch -c <branch name>
+   ```
+
+- Delete a branch:
+
+   ```shell
+   git branch -d <branch name>
+   ```
+
+   Note that you can't delete the branch you're currently on. If you want to delete the current branch, you need to switch to another branch first.
+
+   If the branch you want to delete hasn't been merged yet, you can use the `-D` flag instead of `-d` to force the deletion.
+
+- Rename a branch:
+
+   ```shell
+   git branch -m <old branch name> <new branch name>
+   ```
+
 ## 3. Important commands
 
 - `git init`: initialize a git repository in the current directory
