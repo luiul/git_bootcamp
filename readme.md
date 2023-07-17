@@ -150,6 +150,5 @@ Doing so will put you in a "detached HEAD" state, where you're not on any branch
 ```shell
 git switch -c <new-branch-name>
 ```
-Ignore me! I'm a test for the .zshrc file :-)
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
