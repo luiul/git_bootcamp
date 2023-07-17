@@ -7,8 +7,9 @@ Collection of notes and exercises for learning how to use Git and Github.
 ## Table of Contents
 
 - [1. Git Core](#1-git-core)
-- [2. Useful commands](#2-useful-commands)
-- [3. Important commands](#3-important-commands)
+- [2. Useful Commands](#2-useful-commands)
+- [3. Important Commands](#3-important-commands)
+- [Exercise Notes](#exercise-notes)
 
 ## 1. Git Core
 
@@ -28,7 +29,7 @@ We can consider the branch references as "bookmarks" in a book that we can use t
 
 Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the git checkout command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
 
-## 2. Useful commands
+## 2. Useful Commands
 
 - Amend the most recent commit:
 
@@ -66,7 +67,7 @@ Also, it's important to note that we can move to a specific page without using a
    git branch -m <old branch name> <new branch name>
    ```
 
-## 3. Important commands
+## 3. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git status`: see the status of the current repository
@@ -99,3 +100,39 @@ Also, it's important to note that we can move to a specific page without using a
 - `git reflog delete`: delete the reflog
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
+
+## Exercise Notes
+
+Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
+
+If you choose to delete the branch, you can do so both locally and on the remote:
+
+1. Delete the branch locally:
+
+   ```shell
+   git branch -d <branch-name>
+   ```
+
+   If the branch hasn't been merged and you still want to delete it, you can force the deletion:
+
+   ```shell
+   git branch -D <branch-name>
+   ```
+
+2. Delete the branch on the remote:
+
+   ```shell
+   git push origin --delete <branch-name>
+   ```
+
+   Before you delete the branch, switch back to the main branch (usually `master` or `main`) or another branch:
+
+   ```shell
+   git switch <main-branch-name>
+   ```
+
+   Also, update your local main branch with the latest changes:
+
+   ```shell
+   git pull origin <main-branch-name>
+   ```
