@@ -9,7 +9,6 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [1. Git Core](#1-git-core)
 - [2. Useful commands](#2-useful-commands)
 - [3. Important commands](#3-important-commands)
-- [Another feature section](#another-feature-section)
 
 ## 1. Git Core
 
@@ -38,11 +37,17 @@ Also, it's important to note that we can move to a specific page without using a
    git commit --amend
    ```
 
-- Create a new branch based on the current `HEAD` and switch to it:
+- Create a new branch based on the current `HEAD` and switch to it. Historically, `git checkout` was used to switch branches, but it's now recommended to use `git switch` instead:
 
    ```shell
    git branch <branch name>
    git switch <branch name>
+   ```
+
+   Note that you can do both in one command:
+
+   ```shell
+   git switch -c <branch name>
    ```
 
 ## 3. Important commands
@@ -78,7 +83,3 @@ Also, it's important to note that we can move to a specific page without using a
 - `git reflog delete`: delete the reflog
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
-
-## Another feature section
-
-This is another feature to practice git branching. 
