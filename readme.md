@@ -136,3 +136,19 @@ If you choose to delete the branch, you can do so both locally and on the remote
    ```shell
    git pull origin <main-branch-name>
    ```
+
+Deleting a branch doesn't delete the commits on that branch, it simply removes the branch pointer. The commits are still in the Git repository and can be accessed directly via their commit hashes.
+
+You can use `git switch` followed by a commit hash to move the `HEAD` to a specific commit:
+
+```shell
+git switch <commit-hash>
+```
+
+Doing so will put you in a "detached HEAD" state, where you're not on any branch. Any new commits you make in this state won't be associated with any branch and will be lost once you switch back to a normal branch, unless you create a new branch while you're in the detached HEAD state:
+
+```shell
+git switch -c <new-branch-name>
+```
+
+Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
