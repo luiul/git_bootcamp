@@ -9,6 +9,7 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [1. Git Core](#1-git-core)
 - [2. Useful commands](#2-useful-commands)
 - [3. Important commands](#3-important-commands)
+- [Another feature section](#another-feature-section)
 
 ## 1. Git Core
 
@@ -77,3 +78,7 @@ Also, it's important to note that we can move to a specific page without using a
 - `git reflog delete`: delete the reflog
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
+
+## Another feature section
+
+This is another feature to practice git branching. 
