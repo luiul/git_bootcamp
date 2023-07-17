@@ -37,6 +37,13 @@ Also, it's important to note that we can move to a specific page without using a
    git commit --amend
    ```
 
+- Create a new branch based on the current `HEAD` and switch to it:
+
+   ```shell
+   git branch <branch name>
+   git switch <branch name>
+   ```
+
 ## 3. Important commands
 
 - `git init`: initialize a git repository in the current directory
