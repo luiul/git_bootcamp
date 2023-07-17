@@ -1,44 +1,43 @@
 <!-- omit in toc -->
 # Git and Github Bootcamp
 
-Collection of notes and exercises for learning how to use Git and Github. 
+Collection of notes and exercises for learning how to use Git and Github.
 
-<details>
-<summary>Course Curriculum</summary>
-
-1. Git Core
-   1. Commiting
-   2. Branching
-   3. Merging
-2. Git Advanced 1
-   1. Diffing
-   2. Stashing
-   3. Undoing (revert, reset, restore, etc.)
-3. GitHub and collaboration
-   1. Fetching and Pulling
-   2. Odds and Ends
-   3. Collaborative workflows
-4. Git Advanced 2
-   1. Rebasing
-   2. Tagging
-   3. Reflog
-   4. Custom Aliases
-
-</details>
-
-<!-- Don't forget to update section numbers! -->
 <!-- omit in toc -->
 ## Table of Contents
 
 - [1. Git Core](#1-git-core)
-- [Important commands](#important-commands)
+- [2. Useful commands](#2-useful-commands)
+- [3. Important commands](#3-important-commands)
 
 ## 1. Git Core
 
-Git is a version control system. Version control is software that tracks and manages changes to files over time. Version control systems generally allow users to review previous versions of files, compare changes between versions, revert changes, etc. To set up and configure git, see [here](https://git-scm.com/book/en/v2/Appendix-C%3A-Git-Commands-Setup-and-Config)
+Git is a version control system that tracks and manages changes to files over time. It allows users to review and compare previous file versions, revert changes, and more. For initial setup and configuration of git, refer to the official [git documentation](https://git-scm.com/book/en/v2/Appendix-C%3A-Git-Commands-Setup-and-Config).
 
+One of Git's key concepts is the `HEAD`, a reference to your current location in the repository. It's essentially a pointer to a branch, which in turn is a pointer to a commit. Initially, `HEAD` points to the last commit of the `master` branch, but its position can change as we navigate through the repository.
 
-## Important commands
+Let's illustrate this with an example:
+
+1. **First commit:** Both the `master` branch and `HEAD` point to this commit.
+2. **Second commit:** The `master` branch and `HEAD` update to point to this new commit.
+3. **Create "new-feature" branch:** This branch, now also pointed to by `HEAD`, mirrors the `master` branch's current commit.
+4. **Commit in "new-feature":** This new commit updates the `new-feature` branch and `HEAD`, leaving `master` unchanged.
+5. **Switch back to master:** `HEAD` updates to point back to the `master` branch, leaving the branch pointers untouched.
+
+We can consider the branch references as "bookmarks" in a book that we can use to jump to a specific page. These bookmarks keep track of different paths in the story. The HEAD is the page we are currently reading. At any given time, we're only reading from one page (the HEAD), but we can have multiple bookmarks in the book (branches). This way, we can keep track of where we left off in different parts of the story (different lines of development).
+
+Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the git checkout command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
+
+## 2. Useful commands
+
+- Amend the most recent commit:
+
+   ```shell
+   git add <forgotten file>
+   git commit --amend
+   ```
+
+## 3. Important commands
 
 - `git init`: initialize a git repository in the current directory
 - `git status`: see the status of the current repository
