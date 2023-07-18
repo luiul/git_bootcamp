@@ -9,7 +9,7 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [1. Git Core](#1-git-core)
 - [2. Useful Commands](#2-useful-commands)
 - [3. Important Commands](#3-important-commands)
-- [Exercise Notes](#exercise-notes)
+- [4. Exercise Notes](#4-exercise-notes)
 
 ## 1. Git Core
 
@@ -28,6 +28,10 @@ Let's illustrate this with an example:
 We can consider the branch references as "bookmarks" in a book that we can use to jump to a specific page. These bookmarks keep track of different paths in the story. The HEAD is the page we are currently reading. At any given time, we're only reading from one page (the HEAD), but we can have multiple bookmarks in the book (branches). This way, we can keep track of where we left off in different parts of the story (different lines of development).
 
 Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the git checkout command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
+
+After branching off from the `master` branch, we can make changes to the code and commit them to the `new-feature` branch. The `master` branch remains unchanged. When we're done with the new feature, we can merge the `new-feature` branch back into the `master` branch. This will combine all the changes made in the `new-feature` branch with the `master` branch since their common ancestor commit.
+
+It's important to note that we merge branches, not individual commits. When we perform a merge operation, Git identifies the common ancestor commit of the two branches and integrates the changes made in both branches since that commit **into** the current `HEAD` branch. If there are conflicting changes, these will need to be resolved manually.
 
 ## 2. Useful Commands
 
@@ -75,8 +79,6 @@ Also, it's important to note that we can move to a specific page without using a
 - `git commit`: commit the staged files
 - `git log`: see the commit history
 - `git diff`: see the changes between commits, branches, etc.
-- `git checkout <COMMIT_HASH>`: checkout a commit
-- `git checkout <BRANCH_NAME>`: checkout a branch
 - `git branch <BRANCH_NAME>`: create a branch
 - `git branch -d <BRANCH_NAME>`: delete a branch
 - `git merge <BRANCH_NAME>`: merge a branch into the current branch
@@ -101,7 +103,7 @@ Also, it's important to note that we can move to a specific page without using a
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-## Exercise Notes
+## 4. Exercise Notes
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
