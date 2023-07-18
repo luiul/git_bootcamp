@@ -8,8 +8,9 @@ Collection of notes and exercises for learning how to use Git and Github.
 
 - [1. Git Core](#1-git-core)
 - [2. Useful Commands](#2-useful-commands)
-- [3. Important Commands](#3-important-commands)
-- [4. Exercise Notes](#4-exercise-notes)
+- [3. Resolving Conflicts](#3-resolving-conflicts)
+- [4. Important Commands](#4-important-commands)
+- [5. Exercise Notes](#5-exercise-notes)
 
 ## 1. Git Core
 
@@ -89,8 +90,53 @@ It's important to note that we merge branches, not individual commits. When we p
    
    If `main` and `feature` have conflicting changes, you'll need to resolve these manually. Once resolved, create the merge commit by running `git commit`. If you decide to abort the merge, run `git merge --abort` to revert your repository to its state before attempting the merge.
 
+## 3. Resolving Conflicts
+
+1. First, start the merge process by switching to the `main` branch:
+
+   ```shell
+   git switch main
+   git merge feature
+   ```
+  
+  If there are any conflicts, Git will let you know in the command output
+  
+2. Open the file with conflicts in your text editor. You'll see the conflicting changes marked in the following way:
+
+   ```shell
+   <<<<<<< HEAD
+   [Changes made on the current branch]
+   =======
+   [Changes made on the other branch]
+   >>>>>>> feature
+   ```
+   
+   Everything between `<<<<<<< HEAD` and `=======` represents the changes on the current branch (`main` in our case). And everything between `=======` and `>>>>>>> feature` are the changes on the `feature` branch. 
+   
+3. To resolve the conflict, you need to decide if you want to keep the changes from the `main` branch, the `feature` branch, or a combination of both. Edit the file to make it look like the way you want the final code to be. Delete the conflict markers `<<<<<<<`, `=======`, and `>>>>>>>` when you're done editing.
+
+4. After resolving the conflict in a file, you need to add it to the staging area:
+
+   ```shell
+   git add <filename>
+   ```
+
+   Replace `<filename>` with the name of the file you just edited.
+
+5. Repeat the process for all files with conflicts.
+  
+6. Once you've resolved all conflicts and staged the changes, commit the merge:
+
+   ```shell
+   git commit -m "Resolved merge conflicts for merging feature into main"
+   ```
+
+`Remember, resolving conflicts can sometimes be tricky if the same part of the code has been significantly changed in both branches. It might be necessary to consult with the author of the changes or to understand the context of each change to make an informed decision.
+
+For complex projects with multiple contributors, it's good practice to communicate openly about conflicts and to resolve them collaboratively.
+
 ---
-## 3. Important Commands
+## 4. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git status`: see the status of the current repository
@@ -122,7 +168,7 @@ It's important to note that we merge branches, not individual commits. When we p
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-## 4. Exercise Notes
+## 5. Exercise Notes
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
@@ -173,5 +219,3 @@ git switch -c <new-branch-name>
 ```
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
-
-**Exercise**: A new feature was merged to main!!!
