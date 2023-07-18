@@ -154,3 +154,5 @@ git switch -c <new-branch-name>
 ```
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
+
+**Exercise**: A new feature was merged to main!!!
