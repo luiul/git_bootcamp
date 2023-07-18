@@ -71,6 +71,25 @@ It's important to note that we merge branches, not individual commits. When we p
    git branch -m <old branch name> <new branch name>
    ```
 
+- Merge a branch into the current (`HEAD`) branch. Let's assume you want to merge changes from a branch named `feature` into the `main` branch. First, switch to the `main` branch:
+
+   ```shell
+   git switch main
+   ```
+   
+   Next, merge the `feature` branch:
+   
+   ```shell
+   git merge feature
+   ```
+
+   If the `main` branch has not diverged from when `feature` was created (meaning, no other changes were made to `main` after branching/`main` is a direct ancestor of `feature`), Git performs a **fast-forward merge**. In this case, Git simply moves the `HEAD` pointer and `main` branch pointer to the latest commit of `feature`. 
+   
+   However, if changes were made on `main` after `feature` branched off, Git performs a **three-way merge**. This involves finding the common ancestor of `main` and `feature` and creating a new merge commit that combines changes from each branch. This merge commit has **two parents**: the latest commits of `main` and `feature`. Both `HEAD` and `main` branch pointer then move to this new commit.
+   
+   If `main` and `feature` have conflicting changes, you'll need to resolve these manually. Once resolved, create the merge commit by running `git commit`. If you decide to abort the merge, run `git merge --abort` to revert your repository to its state before attempting the merge.
+
+---
 ## 3. Important Commands
 
 - `git init`: initialize a git repository in the current directory
