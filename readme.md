@@ -9,12 +9,11 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [1. Git Core](#1-git-core)
 - [2. Amend, Branching, and Merging](#2-amend-branching-and-merging)
 - [3. Resolving Conflicts](#3-resolving-conflicts)
-- [4. Git File Restore](#4-git-file-restore)
-  - [4.1. Restore Working Directory File to its Staged Version](#41-restore-working-directory-file-to-its-staged-version)
-  - [4.2. Restore Working Directory File to its Last Committed Version](#42-restore-working-directory-file-to-its-last-committed-version)
-  - [4.3. Restore Staged Version of the File to its Last Committed Version](#43-restore-staged-version-of-the-file-to-its-last-committed-version)
-- [5. Important Commands](#5-important-commands)
-- [6. Exercise Notes (Git and GitHub)](#6-exercise-notes-git-and-github)
+- [4. Comparing Files, Commits, and Branches](#4-comparing-files-commits-and-branches)
+- [5. Other Notes](#5-other-notes)
+  - [5.1. Git File Restore](#51-git-file-restore)
+  - [5.2. Important Commands](#52-important-commands)
+  - [5.3. Exercise Notes (Git and GitHub)](#53-exercise-notes-git-and-github)
 
 ## 1. Git Core
 
@@ -34,7 +33,7 @@ We can consider the branch references as "bookmarks" in a book that we can use t
 
 Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the git checkout command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
 
-After branching off from the `master` branch, we can make changes to the code and commit them to the `new-feature` branch. The `master` branch remains unchanged. When we're done with the new feature, we can merge the `new-feature` branch back into the `master` branch. This will combine all the changes made in the `new-feature` branch with the `master` branch since their common ancestor commit.
+After branching off from the `master` branch, we can make changes to the code and commit them to the `new-feature` branch. The `master` branch remains unchanged. When we're done with the new feature, we can merge the `new-feature` branch back into the `master` branch. This will combine all the changes made in the `new-feature` branch with the `master` branch since their common ancestor (base) commit.
 
 It's important to note that we merge branches, not individual commits. When we perform a merge operation, Git identifies the common ancestor commit of the two branches and integrates the changes made in both branches since that commit **into** the current `HEAD` branch. If there are conflicting changes, these will need to be resolved manually.
 
@@ -158,41 +157,75 @@ git branch -d $(git branch | grep -v main)
 git branch | grep -v main | xargs git branch -d
 ```
 
-## 4. Git File Restore
+## 4. Comparing Files, Commits, and Branches
+
+Note that in the documentation, the **stagging area** is also called **index**.
+
+- Compare Working Directory File to its Staged Version
+
+   ```shell
+   git diff <filename>
+   ```
+
+- Compare Working Directory File to its Last Committed Version
+
+   ```shell
+   git diff HEAD <filename>
+   ```
+
+- Compare Staged File to its Last Committed Version
+
+   ```shell
+   git diff --staged <filename>
+   ```
+
+- Compare Two Branches or Commits
+
+   ```shell
+   git diff <branch1> <branch2>
+   ```
+
+   ```shell
+   git diff <commit1> <commit2>
+   ```
+
+## 5. Other Notes
+
+### 5.1. Git File Restore
 
 Git provides different ways to restore your files to a previous state, depending on whether you want to restore the working directory file to its staged version, the last committed version, or to move the staged version of the file back to its last committed version.
 
-### 4.1. Restore Working Directory File to its Staged Version
+- Restore Working Directory File to its Staged Version
 
-If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command:
+   If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command: 
 
-```shell
-git restore <filename>
-```
+   ```shell
+   git restore <filename>
+   ```
 
-Note that this is equivalent to running `git restore --worktree <filename>`.
+   Note that this is equivalent to running `git restore --worktree <filename>`.
 
-### 4.2. Restore Working Directory File to its Last Committed Version
+- Restore Working Directory File to its Last Committed Version
 
-If you want to discard all changes to a file (both staged and unstaged) and restore the file to its last committed version, you can do so with the following command:
+   If you want to discard all changes to a file (both staged and unstaged) and restore the file to its last committed version, you can do so with the following command:
 
-```shell
-git restore --source=HEAD <filename>
-```
+   ```shell
+   git restore --source=HEAD <filename>
+   ```
 
-This command will restore the file to the state it was in the last commit.
+   This command will restore the file to the state it was in the last commit.
 
-### 4.3. Restore Staged Version of the File to its Last Committed Version
+- Restore Staged Version of the File to its Last Committed Version
 
-If you've added changes to the staging area (with `git add`) and want to unstage those changes and restore the file to its last committed version, you can do so with the following command:
+   If you've added changes to the staging area (with `git add`) and want to unstage those changes and restore the file to its last committed version, you can do so with the following command:
 
-```shell
-git restore --staged <filename>
-```
+   ```shell
+   git restore --staged <filename>
+   ```
 
-This command will unstage the changes and leave the file in your working directory untouched.
+   This command will unstage the changes and leave the file in your working directory untouched.
 
-## 5. Important Commands
+### 5.2. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git status`: see the status of the current repository
@@ -223,7 +256,7 @@ This command will unstage the changes and leave the file in your working directo
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-## 6. Exercise Notes (Git and GitHub)
+### 5.3. Exercise Notes (Git and GitHub)
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
