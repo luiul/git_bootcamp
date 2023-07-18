@@ -7,10 +7,14 @@ Collection of notes and exercises for learning how to use Git and Github.
 ## Table of Contents
 
 - [1. Git Core](#1-git-core)
-- [2. Useful Commands](#2-useful-commands)
+- [2. Amend, Branching, and Merging](#2-amend-branching-and-merging)
 - [3. Resolving Conflicts](#3-resolving-conflicts)
-- [4. Important Commands](#4-important-commands)
-- [5. Exercise Notes](#5-exercise-notes)
+- [4. Git File Restore](#4-git-file-restore)
+  - [4.1. Restore Working Directory File to its Staged Version](#41-restore-working-directory-file-to-its-staged-version)
+  - [4.2. Restore Working Directory File to its Last Committed Version](#42-restore-working-directory-file-to-its-last-committed-version)
+  - [4.3. Restore Staged Version of the File to its Last Committed Version](#43-restore-staged-version-of-the-file-to-its-last-committed-version)
+- [5. Important Commands](#5-important-commands)
+- [6. Exercise Notes (Git and GitHub)](#6-exercise-notes-git-and-github)
 
 ## 1. Git Core
 
@@ -34,7 +38,7 @@ After branching off from the `master` branch, we can make changes to the code an
 
 It's important to note that we merge branches, not individual commits. When we perform a merge operation, Git identifies the common ancestor commit of the two branches and integrates the changes made in both branches since that commit **into** the current `HEAD` branch. If there are conflicting changes, these will need to be resolved manually.
 
-## 2. Useful Commands
+## 2. Amend, Branching, and Merging
 
 - Amend the most recent commit:
 
@@ -77,17 +81,17 @@ It's important to note that we merge branches, not individual commits. When we p
    ```shell
    git switch main
    ```
-   
+
    Next, merge the `feature` branch:
-   
+
    ```shell
    git merge feature
    ```
 
-   If the `main` branch has not diverged from when `feature` was created (meaning, no other changes were made to `main` after branching/`main` is a direct ancestor of `feature`), Git performs a **fast-forward merge**. In this case, Git simply moves the `HEAD` pointer and `main` branch pointer to the latest commit of `feature`. 
-   
+   If the `main` branch has not diverged from when `feature` was created (meaning, no other changes were made to `main` after branching/`main` is a direct ancestor of `feature`), Git performs a **fast-forward merge**. In this case, Git simply moves the `HEAD` pointer and `main` branch pointer to the latest commit of `feature`.
+
    However, if changes were made on `main` after `feature` branched off, Git performs a **three-way merge**. This involves finding the common ancestor of `main` and `feature` and creating a new merge commit that combines changes from each branch. This merge commit has **two parents**: the latest commits of `main` and `feature`. Both `HEAD` and `main` branch pointer then move to this new commit.
-   
+
    If `main` and `feature` have conflicting changes, you'll need to resolve these manually. Once resolved, create the merge commit by running `git commit`. If you decide to abort the merge, run `git merge --abort` to revert your repository to its state before attempting the merge.
 
 ## 3. Resolving Conflicts
@@ -110,9 +114,9 @@ It's important to note that we merge branches, not individual commits. When we p
    [Changes made on the other branch]
    >>>>>>> feature
    ```
-   
-   Everything between `<<<<<<< HEAD` and `=======` represents the changes on the current branch (`main` in our case). And everything between `=======` and `>>>>>>> feature` are the changes on the `feature` branch. 
-   
+
+   Everything between `<<<<<<< HEAD` and `=======` represents the changes on the current branch (`main` in our case). And everything between `=======` and `>>>>>>> feature` are the changes on the `feature` branch.
+
 3. To resolve the conflict, you need to decide if you want to keep the changes from the `main` branch, the `feature` branch, or a combination of both. Edit the file to make it look like the way you want the final code to be. Delete the conflict markers `<<<<<<<`, `=======`, and `>>>>>>>` when you're done editing.
 
 4. After resolving the conflict in a file, you need to add it to the staging area:
@@ -135,8 +139,60 @@ It's important to note that we merge branches, not individual commits. When we p
 
 For complex projects with multiple contributors, it's good practice to communicate openly about conflicts and to resolve them collaboratively.
 
----
-## 4. Important Commands
+Note that after merging you can delete all branches that are no longer needed. For example, if you've merged the `feature` branch into `main`, you can delete the `feature` branch:
+
+```shell
+git branch -d feature
+```
+
+Or multiple branches at once:
+
+```shell
+git branch -d feature1 feature2 feature3
+```
+
+Or all branches but main with one of the following commands:
+
+```shell
+git branch -d $(git branch | grep -v main)
+git branch | grep -v main | xargs git branch -d
+```
+
+## 4. Git File Restore
+
+Git provides different ways to restore your files to a previous state, depending on whether you want to restore the working directory file to its staged version, the last committed version, or to move the staged version of the file back to its last committed version.
+
+### 4.1. Restore Working Directory File to its Staged Version
+
+If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command:
+
+```shell
+git restore <filename>
+```
+
+Note that this is equivalent to running `git restore --worktree <filename>`.
+
+### 4.2. Restore Working Directory File to its Last Committed Version
+
+If you want to discard all changes to a file (both staged and unstaged) and restore the file to its last committed version, you can do so with the following command:
+
+```shell
+git restore --source=HEAD <filename>
+```
+
+This command will restore the file to the state it was in the last commit.
+
+### 4.3. Restore Staged Version of the File to its Last Committed Version
+
+If you've added changes to the staging area (with `git add`) and want to unstage those changes and restore the file to its last committed version, you can do so with the following command:
+
+```shell
+git restore --staged <filename>
+```
+
+This command will unstage the changes and leave the file in your working directory untouched.
+
+## 5. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git status`: see the status of the current repository
@@ -153,7 +209,6 @@ For complex projects with multiple contributors, it's good practice to communica
 - `git clone <REMOTE_URL>`: clone a remote repository
 - `git fetch <REMOTE_NAME>`: fetch a remote repository
 - `git reset`: reset the staging area
-- `git restore`: restore a file to a previous commit
 - `git revert`: revert a commit
 - `git stash`: stash changes
 - `git stash pop`: pop the most recent stash
@@ -168,7 +223,7 @@ For complex projects with multiple contributors, it's good practice to communica
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-## 5. Exercise Notes
+## 6. Exercise Notes (Git and GitHub)
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
