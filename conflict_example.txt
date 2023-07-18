@@ -1,7 +1,0 @@
-AA
-BB
-new_line
-CD
-X
-Y
-Z
