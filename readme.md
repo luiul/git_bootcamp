@@ -153,8 +153,6 @@ It's important to note that we merge branches, not individual commits (see [6.1.
    git add <filename>
    ```
 
-   Replace `<filename>` with the name of the file you just edited.
-
 5. Repeat the process for all files with conflicts.
   
 6. Once you've resolved all conflicts and staged the changes, commit the merge:
@@ -183,44 +181,44 @@ Or all branches but main with one of the following commands:
 
 ```shell
 git branch -d $(git branch | grep -v main)
-```
-
-```shell
+# or
 git branch | grep -v main | xargs git branch -d
 ```
-
-<!-- continue here -->
 
 ## 4. Comparing Files, Commits, and Branches
 
 Note that in the documentation, the **stagging area** is also called **index**.
 
-- Compare Working Directory File to its Staged Version
+- **Working Directory** vs. **Staging Area**
 
    ```shell
-   git diff <filename>
+   git diff
    ```
 
-- Compare Working Directory File to its Last Committed Version
+    This command highlights what has been changed but is not yet staged for the next commit. Note that you can compare individual files by specifying the file name, i.e., `git diff <filename>`.
+
+- **Working Directory** vs. **Last Commit (`HEAD`)**
 
    ```shell
-   git diff HEAD <filename>
+   git diff HEAD
    ```
 
-- Compare Staged File to its Last Committed Version
+   This command will show both staged and unstaged changes combined, as they would look if you committed them right now.
+
+- **Staged File** vs. **Last Commit (`HEAD`)**
 
    ```shell
-   git diff --staged <filename>
+   git diff --staged
+   # or
+   git diff --cached
    ```
 
-- Compare Two Branches or Commits
+- Compare Branches, Commits, or Files in Different Commits
 
    ```shell
    git diff <branch1> <branch2>
-   ```
-
-   ```shell
    git diff <commit1> <commit2>
+   git diff <commit1>:<file1> <commit2>:<file1>
    ```
 
 ## 5. Other Notes
