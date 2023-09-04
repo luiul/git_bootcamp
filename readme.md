@@ -7,13 +7,15 @@ Collection of notes and exercises for learning how to use Git and Github.
 ## Table of Contents
 
 - [1. Git Core](#1-git-core)
-- [2. Amend, Branching, and Merging](#2-amend-branching-and-merging)
-- [3. Resolving Conflicts](#3-resolving-conflicts)
+- [2. Amend, Switching, Branching, and Merging](#2-amend-switching-branching-and-merging)
+- [3. Mergin and Resolving Conflicts](#3-mergin-and-resolving-conflicts)
 - [4. Comparing Files, Commits, and Branches](#4-comparing-files-commits-and-branches)
 - [5. Other Notes](#5-other-notes)
   - [5.1. Git File Restore](#51-git-file-restore)
   - [5.2. Important Commands](#52-important-commands)
-  - [5.3. Exercise Notes (Git and GitHub)](#53-exercise-notes-git-and-github)
+  - [5.3. Commands for Local Repositories](#53-commands-for-local-repositories)
+  - [5.4. Command for Remote Repositories](#54-command-for-remote-repositories)
+  - [5.5. Exercise Notes (Git and GitHub)](#55-exercise-notes-git-and-github)
 - [6. Examples](#6-examples)
   - [6.1. Merge Branches, Not Commits](#61-merge-branches-not-commits)
 - [7. TODO](#7-todo)
@@ -34,34 +36,57 @@ Let's illustrate this with an example:
 
 We can consider the branch references as "bookmarks" in a book that we can use to jump to a specific page. These bookmarks keep track of different paths in the story. The `HEAD` is the page we are currently reading. At any given time, we're only reading from one page (the `HEAD`), but we can have multiple bookmarks in the book (branches). This way, we can keep track of where we left off in different parts of the story (different lines of development).
 
-Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the `git checkout` command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
+Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the `git switch --detach` (or `git checkout`) command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
 
 After branching off from the `master` branch, we can make changes to the code and commit them to the `new-feature` branch. The `master` branch remains unchanged. When we're done with the new feature, we can merge the `new-feature` branch back into the `master` branch. This will combine all the changes made in the `new-feature` branch with the `master` branch since their common ancestor (base) commit.
 
 <!-- adjust link to example -->
 It's important to note that we merge branches, not individual commits (see [6.1. Merge Branches, Not Commits](#61-merge-branches-not-commits)) . When we perform a merge operation, Git identifies the common ancestor commit of the two branches and integrates the changes made in both branches since that commit **into** the current `HEAD` branch. If there are conflicting changes, these will need to be resolved manually.
 
-## 2. Amend, Branching, and Merging
+## 2. Amend, Switching, Branching, and Merging
 
-- Amend the most recent commit:
+- **Amend the most recent commit**:
 
    ```shell
    git add <forgotten file>
    git commit --amend -m 'New commit message'
    ```
 
-- Create a new branch based on the current `HEAD` and switch to it. Historically, `git checkout` was used to switch branches, but it's now recommended to use `git switch` instead:
+- **Create a New Branch and Switch to It**
+
+   Creating a new branch and switching to it are often steps performed in sequence when you're starting work on a new feature, bugfix, or experiment. Traditionally, `git checkout` was used for these tasks, but Git has introduced more intuitive, task-specific commands like `git switch` and `git restore` for better clarity and separation of concerns.
+
+   The `git switch` command is more specific to the task of switching branches and makes the action clearer:
 
    ```shell
-   git branch <branch name>
-   git switch <branch name>
+   git switch <branch_name>
    ```
 
-   Note that you can do both in one command:
+   If you want to create a new branch and switch to it in one go, you can do:
 
    ```shell
-   git switch -c <branch name>
+   git switch -c <new_branch_name>
    ```
+
+   This is similar to `git checkout -b <new_branch_name>`, but it's clearer in intent.
+
+   Always Stash or Commit Changes Before Switching! Before you switch branches, it's good practice to make sure your working directory is clean. There are two primary ways to do this:
+
+   1. **Committing Changes**: If the changes are complete, and you're ready to save them, commit those to the current branch. This is straightforward:
+
+   2. **Stashing Changes**: If your changes are not complete and you're not ready to commit, you can "stash" them. This takes your changes and stores them in a temporary area so that you can reapply them later:
+
+    ```shell
+    git stash
+    ```
+
+    After you've switched to the new branch, you can reapply these changes with:
+
+    ```shell
+    git stash apply
+    ```
+
+   **Why It's Important**: If you try to switch branches with a dirty working directory, i.e., with uncommitted changes, Git will throw an error if those changes conflict with the branch you're trying to switch to. Even if there's no conflict, carrying uncommitted changes across branches can make for a confusing history and can complicate things like code reviews.
 
 - Delete a branch:
 
@@ -76,7 +101,7 @@ It's important to note that we merge branches, not individual commits (see [6.1.
 - Rename a branch:
 
    ```shell
-   git branch -m <old branch name> <new branch name>
+   git branch -m <old_branch> <new_branch>
    ```
 
 - Merge a branch into the current (`HEAD`) branch. Let's assume you want to merge changes from a branch named `feature` into the `main` branch. First, switch to the `main` branch:
@@ -97,7 +122,7 @@ It's important to note that we merge branches, not individual commits (see [6.1.
 
    If `main` and `feature` have conflicting changes, you'll need to resolve these manually. Once resolved, create the merge commit by running `git commit`. If you decide to abort the merge, run `git merge --abort` to revert your repository to its state before attempting the merge.
 
-## 3. Resolving Conflicts
+## 3. Mergin and Resolving Conflicts
 
 1. First, start the merge process by switching to the `main` branch:
 
@@ -138,7 +163,7 @@ It's important to note that we merge branches, not individual commits (see [6.1.
    git commit -m "Resolved merge conflicts for merging feature into main"
    ```
 
-`Remember, resolving conflicts can sometimes be tricky if the same part of the code has been significantly changed in both branches. It might be necessary to consult with the author of the changes or to understand the context of each change to make an informed decision.
+Remember, resolving conflicts can sometimes be tricky if the same part of the code has been significantly changed in both branches. It might be necessary to consult with the author of the changes or to understand the context of each change to make an informed decision.
 
 For complex projects with multiple contributors, it's good practice to communicate openly about conflicts and to resolve them collaboratively.
 
@@ -158,8 +183,13 @@ Or all branches but main with one of the following commands:
 
 ```shell
 git branch -d $(git branch | grep -v main)
+```
+
+```shell
 git branch | grep -v main | xargs git branch -d
 ```
+
+<!-- continue here -->
 
 ## 4. Comparing Files, Commits, and Branches
 
@@ -232,14 +262,25 @@ Git provides different ways to restore your files to a previous state, depending
 ### 5.2. Important Commands
 
 - `git init`: initialize a git repository in the current directory
-- `git status`: see the status of the current repository
-- `git add <FILE>`: add a file to the staging area
+- `git add <file>`: add a file to the staging area
 - `git commit`: commit the staged files
+- `git status`: see the status of the current repository
+- `git merge <branch>`: merge the specified branch into the current branch
+- `git switch <branch>`: switch to the specified branch and update the working directory
+- `git switch -c <branch>`: create and switch to a new branch
+- `git branch`: list all the branches in the current repository
+- `git branch -d <branch>`: delete a branch`
+
+### 5.3. Commands for Local Repositories
+
 - `git log`: see the commit history
 - `git diff`: see the changes between commits, branches, etc.
 - `git branch <BRANCH_NAME>`: create a branch
 - `git branch -d <BRANCH_NAME>`: delete a branch
 - `git merge <BRANCH_NAME>`: merge a branch into the current branch
+
+### 5.4. Command for Remote Repositories
+
 - `git remote add <REMOTE_NAME> <REMOTE_URL>`: add a remote repository
 - `git push <REMOTE_NAME> <BRANCH_NAME>`: push a branch to a remote repository
 - `git pull <REMOTE_NAME> <BRANCH_NAME>`: pull a branch from a remote repository
@@ -260,7 +301,7 @@ Git provides different ways to restore your files to a previous state, depending
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-### 5.3. Exercise Notes (Git and GitHub)
+### 5.5. Exercise Notes (Git and GitHub)
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
@@ -325,12 +366,12 @@ Imagine you have a repository with the following history (newest commits at the 
 * commit A
 ```
 
-**Step 1: Checkout to the Branch You Want to Merge Into**
+**Step 1: Switch to the Branch You Want to Merge Into**
 
 First, you'll typically check out to the branch you want to merge the changes into (often this is `main` or `master`).
 
 ```shell
-git checkout main
+git switch main
 ```
 
 Your `HEAD` is now pointing at `main`, specifically commit `B`.
