@@ -189,7 +189,7 @@ git branch | grep -v main | xargs git branch -d
 
 Note that in the documentation, the **stagging area** is also called **index**.
 
-- **Working Directory** vs. **Staging Area**
+- **Working Directory** vs. **Staging Area** (only unstaged changes)
 
    ```shell
    git diff
@@ -197,15 +197,7 @@ Note that in the documentation, the **stagging area** is also called **index**.
 
     This command highlights what has been changed but is not yet staged for the next commit. Note that you can compare individual files by specifying the file name, i.e., `git diff <filename>`.
 
-- **Working Directory** vs. **Last Commit (`HEAD`)**
-
-   ```shell
-   git diff HEAD
-   ```
-
-   This command will show both staged and unstaged changes combined, as they would look if you committed them right now.
-
-- **Staged File** vs. **Last Commit (`HEAD`)**
+- **Staged File** vs. **Last Commit (`HEAD`)** (only staged changes)
 
    ```shell
    git diff --staged
@@ -213,12 +205,22 @@ Note that in the documentation, the **stagging area** is also called **index**.
    git diff --cached
    ```
 
+- **Working Directory (and Staging Area)** vs. **Last Commit (`HEAD`)** (both staged and unstaged changes)
+
+   ```shell
+   git diff HEAD
+   ```
+
+   This command will show both staged and unstaged changes combined, as they would look if you committed them right now.
+
 - Compare Branches, Commits, or Files in Different Commits
 
    ```shell
    git diff <branch1> <branch2>
    git diff <commit1> <commit2>
    git diff <commit1>:<file1> <commit2>:<file1>
+   # or
+   git diff <commit1> <commit2> <file1>
    ```
 
 ## 5. Other Notes
