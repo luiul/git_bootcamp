@@ -14,6 +14,9 @@ Collection of notes and exercises for learning how to use Git and Github.
   - [5.1. Git File Restore](#51-git-file-restore)
   - [5.2. Important Commands](#52-important-commands)
   - [5.3. Exercise Notes (Git and GitHub)](#53-exercise-notes-git-and-github)
+- [6. Examples](#6-examples)
+  - [6.1. Merge Branches, Not Commits](#61-merge-branches-not-commits)
+- [7. TODO](#7-todo)
 
 ## 1. Git Core
 
@@ -29,13 +32,14 @@ Let's illustrate this with an example:
 4. **Commit in "new-feature":** This new commit updates the `new-feature` branch and `HEAD`, leaving `master` unchanged.
 5. **Switch back to master:** `HEAD` updates to point back to the `master` branch, leaving the branch pointers untouched.
 
-We can consider the branch references as "bookmarks" in a book that we can use to jump to a specific page. These bookmarks keep track of different paths in the story. The HEAD is the page we are currently reading. At any given time, we're only reading from one page (the HEAD), but we can have multiple bookmarks in the book (branches). This way, we can keep track of where we left off in different parts of the story (different lines of development).
+We can consider the branch references as "bookmarks" in a book that we can use to jump to a specific page. These bookmarks keep track of different paths in the story. The `HEAD` is the page we are currently reading. At any given time, we're only reading from one page (the `HEAD`), but we can have multiple bookmarks in the book (branches). This way, we can keep track of where we left off in different parts of the story (different lines of development).
 
-Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the git checkout command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
+Also, it's important to note that we can move to a specific page without using a bookmark (i.e., without using a branch reference) by using the `git checkout` command and specifying the commit hash. This is similar to remembering a specific page number and going directly to it. However, without a bookmark, it might be harder to remember where you were, especially if you move to other pages (commits). That's why it's often easier to work with branches: they are like bookmarks that help you keep track of where you've been in the project history.
 
 After branching off from the `master` branch, we can make changes to the code and commit them to the `new-feature` branch. The `master` branch remains unchanged. When we're done with the new feature, we can merge the `new-feature` branch back into the `master` branch. This will combine all the changes made in the `new-feature` branch with the `master` branch since their common ancestor (base) commit.
 
-It's important to note that we merge branches, not individual commits. When we perform a merge operation, Git identifies the common ancestor commit of the two branches and integrates the changes made in both branches since that commit **into** the current `HEAD` branch. If there are conflicting changes, these will need to be resolved manually.
+<!-- adjust link to example -->
+It's important to note that we merge branches, not individual commits (see [6.1. Merge Branches, Not Commits](#61-merge-branches-not-commits)) . When we perform a merge operation, Git identifies the common ancestor commit of the two branches and integrates the changes made in both branches since that commit **into** the current `HEAD` branch. If there are conflicting changes, these will need to be resolved manually.
 
 ## 2. Amend, Branching, and Merging
 
@@ -43,7 +47,7 @@ It's important to note that we merge branches, not individual commits. When we p
 
    ```shell
    git add <forgotten file>
-   git commit --amend
+   git commit --amend -m 'New commit message'
    ```
 
 - Create a new branch based on the current `HEAD` and switch to it. Historically, `git checkout` was used to switch branches, but it's now recommended to use `git switch` instead:
@@ -197,7 +201,7 @@ Git provides different ways to restore your files to a previous state, depending
 
 - Restore Working Directory File to its Staged Version
 
-   If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command: 
+   If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command:
 
    ```shell
    git restore <filename>
@@ -307,3 +311,65 @@ git switch -c <new-branch-name>
 ```
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
+
+## 6. Examples
+
+### 6.1. Merge Branches, Not Commits
+
+Imagine you have a repository with the following history (newest commits at the top):
+
+```sql
+* commit D (HEAD -> feature)
+* commit C
+* commit B (main)
+* commit A
+```
+
+**Step 1: Checkout to the Branch You Want to Merge Into**
+
+First, you'll typically check out to the branch you want to merge the changes into (often this is `main` or `master`).
+
+```shell
+git checkout main
+```
+
+Your `HEAD` is now pointing at `main`, specifically commit `B`.
+
+**Step 2: Perform Merge**
+
+Next, you merge the `feature` branch into `main`.
+
+```shell
+git merge feature
+```
+
+**What Happens During Merge**
+
+1. **Identify Common Ancestor**: Git identifies the common ancestor of the two branches, which is commit `B` in this case.
+2. **Integrate Changes**: Git then looks at commits `C` and `D` on the `feature` branch that occurred after the common ancestor `B`, and applies those changes on top of commit `B` in `main`.
+3. **New Merge Commit**: Usually, a new "merge commit" is created to mark the point where the two branches were merged. This commit will have two parent commits: the previous tip of the `main` branch (commit `B`) and the tip of the `feature` branch (commit `D`).
+
+Your history would look something like this if the merge is successful:
+
+```sql
+* commit E (HEAD -> main, Merge commit)
+|\  
+| * commit D (feature)
+| * commit C
+* | commit B
+|/
+* commit A
+```
+
+- `main` is now at commit `E`, which integrated the changes from the `feature` branch.
+- `feature` branch still points to commit `D`.
+
+**Step 3: Handling Conflicts**
+
+If changes in `feature` conflict with changes in `main` since the common ancestor ( `B`), Git will prompt you to resolve these conflicts manually. Once resolved, you can proceed to create the merge commit.
+
+So when the statement says "we merge branches, not individual commits," it means the operation takes into account the series of commits that have occurred on the branches since their common ancestor. The merge operation attempts to integrate all of these changes into the `HEAD` branch ( `main` in this example).
+
+## 7. TODO
+
+- Remove the title format from the lists in section 4 and 5
