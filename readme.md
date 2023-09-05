@@ -12,19 +12,22 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [4. Comparing Files, Commits, and Branches](#4-comparing-files-commits-and-branches)
 - [5. Stashing Changes](#5-stashing-changes)
   - [5.1. Introduction](#51-introduction)
-  - [5.2. Commands](#52-commands)
-- [6. Examples](#6-examples)
-  - [6.1. Merge Branches, Not Commits](#61-merge-branches-not-commits)
-- [7. Other Notes](#7-other-notes)
-  - [7.1. Working Directory vs. Staging Area](#71-working-directory-vs-staging-area)
-  - [7.2. Git Workflow Diagram Explained](#72-git-workflow-diagram-explained)
-  - [7.3. Avoid Git Checkout](#73-avoid-git-checkout)
-  - [7.4. Git File Restore](#74-git-file-restore)
-  - [7.5. Important Commands](#75-important-commands)
-  - [7.6. Commands for Local Repositories](#76-commands-for-local-repositories)
-  - [7.7. Command for Remote Repositories](#77-command-for-remote-repositories)
-  - [7.8. Exercise Notes (Git and GitHub)](#78-exercise-notes-git-and-github)
-- [8. TODO](#8-todo)
+  - [5.2. Stashing Commands](#52-stashing-commands)
+- [6. Unmodifying and Unstaging](#6-unmodifying-and-unstaging)
+  - [6.1. Working with Staged Changes](#61-working-with-staged-changes)
+  - [6.2. Working with Unstaged Changes](#62-working-with-unstaged-changes)
+  - [6.3. Working with Both Staged and Unstaged Changes](#63-working-with-both-staged-and-unstaged-changes)
+- [7. Examples](#7-examples)
+  - [7.1. Merge Branches, Not Commits](#71-merge-branches-not-commits)
+- [8. Other Notes](#8-other-notes)
+  - [8.1. Working Directory vs. Staging Area](#81-working-directory-vs-staging-area)
+  - [8.2. Git Workflow Diagram Explained](#82-git-workflow-diagram-explained)
+  - [8.3. Avoid Git Checkout](#83-avoid-git-checkout)
+  - [8.4. Important Commands](#84-important-commands)
+  - [8.5. Commands for Local Repositories](#85-commands-for-local-repositories)
+  - [8.6. Command for Remote Repositories](#86-command-for-remote-repositories)
+  - [8.7. Exercise Notes (Git and GitHub)](#87-exercise-notes-git-and-github)
+- [9. TODO](#9-todo)
 
 ## 1. Git Core
 
@@ -229,7 +232,7 @@ So, stashing is a way to sidestep both of these issues: it allows you to cleanly
 
 When you stash your changes, it results in a "clean working tree." A **clean working tree** means that there are no changes that are staged (in the staging area) or unstaged (in the working directory). Having a clean working tree is often necessary for various Git operations, like pulling from a remote repository or switching to a different branch that has conflicting changes.
 
-### 5.2. Commands
+### 5.2. Stashing Commands
 
 - **Stash Changes**: This command takes all uncommitted changes (both staged and unstaged) and stores them in a temporary area, leaving you with a clean working tree.
 
@@ -272,11 +275,50 @@ When you stash your changes, it results in a "clean working tree." A **clean wor
    git stash clear
    ```
 
-<!-- do the exercise -->
+<!-- continuehere -->
+## 6. Unmodifying and Unstaging
 
-## 6. Examples
+### 6.1. Working with Staged Changes
 
-### 6.1. Merge Branches, Not Commits
+- **Unstage Changes**: If you've staged changes with `git add` and want to unstage those changes, use:
+
+    ```shell
+    git restore --staged <filename>
+    ```
+
+    This command will unstage the changes while leaving the file in your working directory as it is, preserving any changes you've made.
+
+### 6.2. Working with Unstaged Changes
+
+- **Remove Unstaged Changes and Match the Staged or Last Committed Version**: If you've made changes to a file but haven't staged them, and you want to undo these changes, you can:
+
+    ```shell
+    git restore <filename>
+    ```
+  
+    This will remove any unstaged changes and make the file in your working directory match the staged version, which could be either the last committed version or a previously staged but uncommitted change.
+
+### 6.3. Working with Both Staged and Unstaged Changes
+
+- **Remove Both Unstaged and Staged Changes and Restore to Last Committed Version**: If you want to discard all changes (both staged and unstaged) and restore the file to its last committed version, use:
+
+    ```shell
+    git restore --source=HEAD <filename>
+    ```
+
+    This explicitly tells Git to restore the file to the last committed state based on `HEAD`, ignoring both staged and unstaged changes.
+
+- **Restore File to a Specific Past Commit**: To restore a file to the state from a specific past commit, use:
+
+    ```shell
+    git restore --source=<commit_hash> <filename>
+    ```
+
+    This will restore the file to the state it was in at the specified commit, discarding all changes made to the file since then.
+
+## 7. Examples
+
+### 7.1. Merge Branches, Not Commits
 
 Imagine you have a repository with the following history (newest commits at the top):
 
@@ -332,9 +374,9 @@ If changes in `feature` conflict with changes in `main` since the common ancesto
 
 So when the statement says "we merge branches, not individual commits," it means the operation takes into account the series of commits that have occurred on the branches since their common ancestor. The merge operation attempts to integrate all of these changes into the `HEAD` branch ( `main` in this example).
 
-## 7. Other Notes
+## 8. Other Notes
 
-### 7.1. Working Directory vs. Staging Area
+### 8.1. Working Directory vs. Staging Area
 
 The term "working directory" refers to the *set of files and directories* in your local file system that is associated with a Git repository. These files represent the current state of your project and may include changes that are either staged or unstaged.
 
@@ -348,7 +390,7 @@ To conceptualize, consider your working directory as your "workspace" where you 
 
 In summary, the working directory contains both staged and unstaged changes, but it's helpful to think of the staged changes as being in a separate "staging area," awaiting to be committed to the repository.
 
-### 7.2. Git Workflow Diagram Explained
+### 8.2. Git Workflow Diagram Explained
 
 ```mermaid
 graph TD;
@@ -379,7 +421,7 @@ The above diagram illustrates the key areas of a Git workflow:
 
     - **Transition to Local Repository**: You can update your local repository to match the remote repository by running `git pull`, which fetches changes from the remote and merges them into your local repository.
 
-### 7.3. Avoid Git Checkout
+### 8.3. Avoid Git Checkout
 
 Avoiding git checkout in favor of more specialized commands is a good idea for clarity and specificity.
 
@@ -401,64 +443,24 @@ Avoiding git checkout in favor of more specialized commands is a good idea for c
     git restore some-file.txt
     ```
 
-4. **Restore a file to the state in the staging area**: To undo changes in the working directory and make a file identical to its version in the staging area, you can use:
-
-    ```bash
-    git restore --source=HEAD --staged --worktree some-file.txt
-    ```
-
-5. **Unstaging changes**: Use `git restore --staged <file>` instead of `git checkout HEAD -- <file>` to unstage changes.
+4. **Unstaging changes**: Use `git restore --staged <file>` instead of `git checkout HEAD -- <file>` to unstage changes.
 
     ```bash
     git restore --staged some-file.txt
     ```
 
-6. **Applying changes from another branch**: Use `git apply` or `git cherry-pick` to bring in changes from another branch without switching to it. `git checkout` used to do this with the `-p` flag, but it's not the primary way to do it anymore.
+5. **Applying changes from another branch**: Use `git apply` or `git cherry-pick` to bring in changes from another branch without switching to it. `git checkout` used to do this with the `-p` flag, but it's not the primary way to do it anymore.
 
-7. **Detaching HEAD**: While `git checkout` could be used to detach the HEAD, you can do it explicitly using `git switch` and `git reset`:
+6. **Detaching HEAD**: While `git checkout` could be used to detach the HEAD, you can do it explicitly using `git switch` and `git reset`:
 
     ```bash
     git switch --detach
     git reset --hard <commit_hash>
     ```
 
-8. **Checking out submodules**: If you are working with submodules, instead of `git checkout` you might use a combination of `git submodule update` and other submodule commands.
+7. **Checking out submodules**: If you are working with submodules, instead of `git checkout` you might use a combination of `git submodule update` and other submodule commands.
 
-### 7.4. Git File Restore
-
-Git provides different ways to restore your files to a previous state, depending on whether you want to restore the working directory file to its staged version, the last committed version, or to move the staged version of the file back to its last committed version.
-
-- Restore Working Directory File to its Staged Version
-
-   If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command:
-
-   ```shell
-   git restore <filename>
-   ```
-
-   Note that this is equivalent to running `git restore --worktree <filename>`.
-
-- Restore Working Directory File to its Last Committed Version
-
-   If you want to discard all changes to a file (both staged and unstaged) and restore the file to its last committed version, you can do so with the following command:
-
-   ```shell
-   git restore --source=HEAD <filename>
-   ```
-
-   This command will restore the file to the state it was in the last commit.
-
-- Restore Staged Version of the File to its Last Committed Version
-
-   If you've added changes to the staging area (with `git add`) and want to unstage those changes and restore the file to its last committed version, you can do so with the following command:
-
-   ```shell
-   git restore --staged <filename>
-   ```
-
-   This command will unstage the changes and leave the file in your working directory untouched.
-
-### 7.5. Important Commands
+### 8.4. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git add <file>`: add a file to the staging area
@@ -470,7 +472,7 @@ Git provides different ways to restore your files to a previous state, depending
 - `git branch`: list all the branches in the current repository
 - `git branch -d <branch>`: delete a branch`
 
-### 7.6. Commands for Local Repositories
+### 8.5. Commands for Local Repositories
 
 - `git log`: see the commit history
 - `git diff`: see the changes between commits, branches, etc.
@@ -478,7 +480,7 @@ Git provides different ways to restore your files to a previous state, depending
 - `git branch -d <BRANCH_NAME>`: delete a branch
 - `git merge <BRANCH_NAME>`: merge a branch into the current branch
 
-### 7.7. Command for Remote Repositories
+### 8.6. Command for Remote Repositories
 
 - `git remote add <REMOTE_NAME> <REMOTE_URL>`: add a remote repository
 - `git push <REMOTE_NAME> <BRANCH_NAME>`: push a branch to a remote repository
@@ -500,7 +502,7 @@ Git provides different ways to restore your files to a previous state, depending
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-### 7.8. Exercise Notes (Git and GitHub)
+### 8.7. Exercise Notes (Git and GitHub)
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
@@ -552,6 +554,6 @@ git switch -c <new-branch-name>
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
 
-## 8. TODO
+## 9. TODO
 
 - Remove the title format from the lists in section 4 and 5
