@@ -10,15 +10,21 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [2. Amend, Switching, Branching, and Merging](#2-amend-switching-branching-and-merging)
 - [3. Mergin and Resolving Conflicts](#3-mergin-and-resolving-conflicts)
 - [4. Comparing Files, Commits, and Branches](#4-comparing-files-commits-and-branches)
-- [5. Other Notes](#5-other-notes)
-  - [5.1. Git File Restore](#51-git-file-restore)
-  - [5.2. Important Commands](#52-important-commands)
-  - [5.3. Commands for Local Repositories](#53-commands-for-local-repositories)
-  - [5.4. Command for Remote Repositories](#54-command-for-remote-repositories)
-  - [5.5. Exercise Notes (Git and GitHub)](#55-exercise-notes-git-and-github)
+- [5. Stashing Changes](#5-stashing-changes)
+  - [5.1. Introduction](#51-introduction)
+  - [5.2. Commands](#52-commands)
 - [6. Examples](#6-examples)
   - [6.1. Merge Branches, Not Commits](#61-merge-branches-not-commits)
-- [7. TODO](#7-todo)
+- [7. Other Notes](#7-other-notes)
+  - [7.1. Working Directory vs. Staging Area](#71-working-directory-vs-staging-area)
+  - [7.2. Git Workflow Diagram Explained](#72-git-workflow-diagram-explained)
+  - [7.3. Avoid Git Checkout](#73-avoid-git-checkout)
+  - [7.4. Git File Restore](#74-git-file-restore)
+  - [7.5. Important Commands](#75-important-commands)
+  - [7.6. Commands for Local Repositories](#76-commands-for-local-repositories)
+  - [7.7. Command for Remote Repositories](#77-command-for-remote-repositories)
+  - [7.8. Exercise Notes (Git and GitHub)](#78-exercise-notes-git-and-github)
+- [8. TODO](#8-todo)
 
 ## 1. Git Core
 
@@ -72,19 +78,9 @@ It's important to note that we merge branches, not individual commits (see [6.1.
 
    Always Stash or Commit Changes Before Switching! Before you switch branches, it's good practice to make sure your working directory is clean. There are two primary ways to do this:
 
-   1. **Committing Changes**: If the changes are complete, and you're ready to save them, commit those to the current branch. This is straightforward:
+   1. **Committing Changes**: If the changes are complete, and you're ready to save them, commit those to the current branch.
 
-   2. **Stashing Changes**: If your changes are not complete and you're not ready to commit, you can "stash" them. This takes your changes and stores them in a temporary area so that you can reapply them later:
-
-    ```shell
-    git stash
-    ```
-
-    After you've switched to the new branch, you can reapply these changes with:
-
-    ```shell
-    git stash apply
-    ```
+   2. **Stashing Changes**: If your changes are not complete and you're not ready to commit, you can "stash" them. This takes your changes and stores them in a temporary area so that you can reapply them later.
 
    **Why It's Important**: If you try to switch branches with a dirty working directory, i.e., with uncommitted changes, Git will throw an error if those changes conflict with the branch you're trying to switch to. Even if there's no conflict, carrying uncommitted changes across branches can make for a confusing history and can complicate things like code reviews.
 
@@ -181,15 +177,14 @@ Or all branches but main with one of the following commands:
 
 ```shell
 git branch -d $(git branch | grep -v main)
-# or
-git branch | grep -v main | xargs git branch -d
+# or git branch | grep -v main | xargs git branch -d
 ```
 
 ## 4. Comparing Files, Commits, and Branches
 
 Note that in the documentation, the **stagging area** is also called **index**.
 
-- **Working Directory** vs. **Staging Area** (only unstaged changes)
+- **Working Directory vs. Staging Area** (only unstaged changes)
 
    ```shell
    git diff
@@ -197,15 +192,14 @@ Note that in the documentation, the **stagging area** is also called **index**.
 
     This command highlights what has been changed but is not yet staged for the next commit. Note that you can compare individual files by specifying the file name, i.e., `git diff <filename>`.
 
-- **Staged File** vs. **Last Commit (`HEAD`)** (only staged changes)
+- **Staged File vs. Last Commit (`HEAD`)** (only staged changes)
 
    ```shell
    git diff --staged
-   # or
-   git diff --cached
+   # or git diff --cached
    ```
 
-- **Working Directory (and Staging Area)** vs. **Last Commit (`HEAD`)** (both staged and unstaged changes)
+- **Working Directory (and Staging Area) vs. Last Commit (`HEAD`)** (both staged and unstaged changes)
 
    ```shell
    git diff HEAD
@@ -219,139 +213,66 @@ Note that in the documentation, the **stagging area** is also called **index**.
    git diff <branch1> <branch2>
    git diff <commit1> <commit2>
    git diff <commit1>:<file1> <commit2>:<file1>
+   # or git diff <commit1> <commit2> <file1>
+   ```
+
+## 5. Stashing Changes
+
+### 5.1. Introduction
+
+Stashing is a way to temporarily store both staged and unstaged changes that you don't want to commit immediately. This is particularly useful when you need to quickly switch context and work on a different branch, but you're in the middle of making code changes that aren't ready to be committed.
+
+1. **Changes Come With You**: If you switch branches without stashing, your changes (both staged and unstaged) will come with you to the new branch, as long as they don't conflict with files in the destination branch. This is the default behavior of Git and works well for quick context switches, assuming no conflicts.
+2. **Potential Conflicts**: Git will prevent you from switching branches if it detects that the changes you have (staged or unstaged) would conflict with the destination branch. This is where git stash becomes particularly useful. You can stash your changes, switch branches, and then later apply the stash to continue where you left off.
+
+So, stashing is a way to sidestep both of these issues: it allows you to cleanly switch branches without committing unfinished work, and it eliminates the issue of conflicts when switching branches.
+
+When you stash your changes, it results in a "clean working tree." A **clean working tree** means that there are no changes that are staged (in the staging area) or unstaged (in the working directory). Having a clean working tree is often necessary for various Git operations, like pulling from a remote repository or switching to a different branch that has conflicting changes.
+
+### 5.2. Commands
+
+- **Stash Changes**: This command takes all uncommitted changes (both staged and unstaged) and stores them in a temporary area, leaving you with a clean working tree.
+
+   ```shell
+   git stash
+   ```
+
+   By default, git stash will stash both staged and unstaged changes. If you want more control over what to stash, you can use the following flags:
+  - --keep-index: Stash only unstaged changes and keep staged changes in the staging area.
+  - --include-untracked: Stash both staged and unstaged changes, as well as any untracked files.
+  - --all: Stash all changes, including ignored files.
+
+- **List Stashes**: This command lists all stashes in the order they were created. The most recent stash is at the top.
+
+   ```shell
+   git stash list
+   ```
+
+- **Apply or Pop Stash**: The apply command reapplies the most recent stash to your working directory without removing it from the stash list. On the other hand, pop both reapplies and removes the most recent stash from the stash list.
+
+   ```shell
+   git stash apply
    # or
-   git diff <commit1> <commit2> <file1>
+   git stash pop
    ```
 
-## 5. Other Notes
-
-### 5.1. Git File Restore
-
-Git provides different ways to restore your files to a previous state, depending on whether you want to restore the working directory file to its staged version, the last committed version, or to move the staged version of the file back to its last committed version.
-
-- Restore Working Directory File to its Staged Version
-
-   If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command:
+   If you want to apply or pop a specific stash, you can specify its index like so:
 
    ```shell
-   git restore <filename>
+   git stash apply stash@{<stash_number>}
+   # or
+   git stash pop stash@{<stash_number>}
    ```
 
-   Note that this is equivalent to running `git restore --worktree <filename>`.
-
-- Restore Working Directory File to its Last Committed Version
-
-   If you want to discard all changes to a file (both staged and unstaged) and restore the file to its last committed version, you can do so with the following command:
+- **Drop a Specific Stash or Clear All Stashes**: The drop command deletes a specified stash from the stash list. The clear command removes all stashes from the stash list.
 
    ```shell
-   git restore --source=HEAD <filename>
+   git stash drop stash@{<stash_number>}
+   # or
+   git stash clear
    ```
 
-   This command will restore the file to the state it was in the last commit.
-
-- Restore Staged Version of the File to its Last Committed Version
-
-   If you've added changes to the staging area (with `git add`) and want to unstage those changes and restore the file to its last committed version, you can do so with the following command:
-
-   ```shell
-   git restore --staged <filename>
-   ```
-
-   This command will unstage the changes and leave the file in your working directory untouched.
-
-### 5.2. Important Commands
-
-- `git init`: initialize a git repository in the current directory
-- `git add <file>`: add a file to the staging area
-- `git commit`: commit the staged files
-- `git status`: see the status of the current repository
-- `git merge <branch>`: merge the specified branch into the current branch
-- `git switch <branch>`: switch to the specified branch and update the working directory
-- `git switch -c <branch>`: create and switch to a new branch
-- `git branch`: list all the branches in the current repository
-- `git branch -d <branch>`: delete a branch`
-
-### 5.3. Commands for Local Repositories
-
-- `git log`: see the commit history
-- `git diff`: see the changes between commits, branches, etc.
-- `git branch <BRANCH_NAME>`: create a branch
-- `git branch -d <BRANCH_NAME>`: delete a branch
-- `git merge <BRANCH_NAME>`: merge a branch into the current branch
-
-### 5.4. Command for Remote Repositories
-
-- `git remote add <REMOTE_NAME> <REMOTE_URL>`: add a remote repository
-- `git push <REMOTE_NAME> <BRANCH_NAME>`: push a branch to a remote repository
-- `git pull <REMOTE_NAME> <BRANCH_NAME>`: pull a branch from a remote repository
-- `git clone <REMOTE_URL>`: clone a remote repository
-- `git fetch <REMOTE_NAME>`: fetch a remote repository
-- `git reset`: reset the staging area
-- `git revert`: revert a commit
-- `git stash`: stash changes
-- `git stash pop`: pop the most recent stash
-- `git stash list`: list all stashesexit
-- `git stash clear`: clear all stashes
-- `git config --global alias.<ALIAS_NAME> <COMMAND>`: create a custom alias
-- `git rebase <BRANCH_NAME>`: rebase a branch onto the current branch
-- `git tag <TAG_NAME>`: create a tag
-- `git tag -d <TAG_NAME>`: delete a tag
-- `git reflog`: see the reflog
-- `git reflog delete`: delete the reflog
-- `git reflog expire --expire-unreachable=now --all`: delete the reflog
-- `git reflog expire --expire=now --all`: delete the reflog
-
-### 5.5. Exercise Notes (Git and GitHub)
-
-Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
-
-If you choose to delete the branch, you can do so both locally and on the remote:
-
-1. Delete the branch locally:
-
-   ```shell
-   git branch -d <branch-name>
-   ```
-
-   If the branch hasn't been merged and you still want to delete it, you can force the deletion:
-
-   ```shell
-   git branch -D <branch-name>
-   ```
-
-2. Delete the branch on the remote:
-
-   ```shell
-   git push origin --delete <branch-name>
-   ```
-
-   Before you delete the branch, switch back to the main branch (usually `master` or `main`) or another branch:
-
-   ```shell
-   git switch <main-branch-name>
-   ```
-
-   Also, update your local main branch with the latest changes:
-
-   ```shell
-   git pull origin <main-branch-name>
-   ```
-
-Deleting a branch doesn't delete the commits on that branch, it simply removes the branch pointer. The commits are still in the Git repository and can be accessed directly via their commit hashes.
-
-You can use `git switch` followed by a commit hash to move the `HEAD` to a specific commit:
-
-```shell
-git switch <commit-hash>
-```
-
-Doing so will put you in a "detached HEAD" state, where you're not on any branch. Any new commits you make in this state won't be associated with any branch and will be lost once you switch back to a normal branch, unless you create a new branch while you're in the detached HEAD state:
-
-```shell
-git switch -c <new-branch-name>
-```
-
-Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
+<!-- do the exercise -->
 
 ## 6. Examples
 
@@ -411,6 +332,226 @@ If changes in `feature` conflict with changes in `main` since the common ancesto
 
 So when the statement says "we merge branches, not individual commits," it means the operation takes into account the series of commits that have occurred on the branches since their common ancestor. The merge operation attempts to integrate all of these changes into the `HEAD` branch ( `main` in this example).
 
-## 7. TODO
+## 7. Other Notes
+
+### 7.1. Working Directory vs. Staging Area
+
+The term "working directory" refers to the *set of files and directories* in your local file system that is associated with a Git repository. These files represent the current state of your project and may include changes that are either staged or unstaged.
+
+Here's a breakdown to help conceptualize:
+
+- **Staged Changes**: These are changes that have been marked for inclusion in the next commit. Staging changes doesn't affect your working directory; it affects the staging area, which is a layer between the working directory and the repository.
+- **Unstaged Changes**: These are changes in your working directory that have not yet been staged. These could be modifications to existing files or new files that haven't been added to the staging area yet.
+- **Clean Working Directory**: This means that there are no changes in either staged or unstaged state. The working directory matches the latest commit in the current branch.
+
+To conceptualize, consider your working directory as your "workspace" where you do your regular work—creating, editing, deleting files, etc. The staging area is like a "preparation area," a place where you gather all the changes that you want to commit. Finally, the Git repository itself is the "record book" or "database" that keeps a history of all the commits (sets of changes) made over time.
+
+In summary, the working directory contains both staged and unstaged changes, but it's helpful to think of the staged changes as being in a separate "staging area," awaiting to be committed to the repository.
+
+### 7.2. Git Workflow Diagram Explained
+
+```mermaid
+graph TD;
+  A[Working Directory] -->|git add| B[Staging Area];
+  B -->|git commit| C[Local Repository];
+  C -->|git push| D[Remote Repository];
+  D -->|git pull| C;
+  C -->|git switch| A;
+```
+
+The above diagram illustrates the key areas of a Git workflow:
+
+1. **Working Directory**: This is where your actual files live. When you make changes to your files, those changes are initially unstaged and exist only in your working directory.
+
+    - **Transition to Staging Area**: You stage these changes by running `git add`, which moves the changes to the staging area.
+
+2. **Staging Area**: This is an intermediate area where changes are collected before being permanently stored in the commit history of the local repository.
+
+    - **Transition to Local Repository**: After staging, you run `git commit` to store the changes from the staging area into the local repository.
+
+3. **Local Repository**: This is the `.git` folder in your project directory. It contains the entire history of your project.
+
+    - **Transition to Remote Repository**: You can push commits from your local repository to a remote repository using `git push`.
+  
+    - **Transition to Working Directory**: You can update the working directory to reflect a specific commit or branch using `git switch`.
+
+4. **Remote Repository**: This is a version of your project that is hosted on a remote server, typically platforms like GitHub, GitLab, or Bitbucket.
+
+    - **Transition to Local Repository**: You can update your local repository to match the remote repository by running `git pull`, which fetches changes from the remote and merges them into your local repository.
+
+### 7.3. Avoid Git Checkout
+
+Avoiding git checkout in favor of more specialized commands is a good idea for clarity and specificity.
+
+1. **Switching branches**: Use `git switch <branch_name>` instead of `git checkout <branch_name>`.
+
+    ```bash
+    git switch feature-branch
+    ```
+
+2. **Creating a new branch and switching to it**: Use `git switch -c <new_branch_name>` instead of `git checkout -b <new_branch_name>`.
+
+    ```bash
+    git switch -c new-feature-branch
+    ```
+
+3. **Restore a file to the last committed state**: Use `git restore <file>` instead of `git checkout -- <file>`.
+
+    ```bash
+    git restore some-file.txt
+    ```
+
+4. **Restore a file to the state in the staging area**: To undo changes in the working directory and make a file identical to its version in the staging area, you can use:
+
+    ```bash
+    git restore --source=HEAD --staged --worktree some-file.txt
+    ```
+
+5. **Unstaging changes**: Use `git restore --staged <file>` instead of `git checkout HEAD -- <file>` to unstage changes.
+
+    ```bash
+    git restore --staged some-file.txt
+    ```
+
+6. **Applying changes from another branch**: Use `git apply` or `git cherry-pick` to bring in changes from another branch without switching to it. `git checkout` used to do this with the `-p` flag, but it's not the primary way to do it anymore.
+
+7. **Detaching HEAD**: While `git checkout` could be used to detach the HEAD, you can do it explicitly using `git switch` and `git reset`:
+
+    ```bash
+    git switch --detach
+    git reset --hard <commit_hash>
+    ```
+
+8. **Checking out submodules**: If you are working with submodules, instead of `git checkout` you might use a combination of `git submodule update` and other submodule commands.
+
+### 7.4. Git File Restore
+
+Git provides different ways to restore your files to a previous state, depending on whether you want to restore the working directory file to its staged version, the last committed version, or to move the staged version of the file back to its last committed version.
+
+- Restore Working Directory File to its Staged Version
+
+   If you made changes to your working directory file and want to discard those changes and restore the file to its staged version, you can do so with the following command:
+
+   ```shell
+   git restore <filename>
+   ```
+
+   Note that this is equivalent to running `git restore --worktree <filename>`.
+
+- Restore Working Directory File to its Last Committed Version
+
+   If you want to discard all changes to a file (both staged and unstaged) and restore the file to its last committed version, you can do so with the following command:
+
+   ```shell
+   git restore --source=HEAD <filename>
+   ```
+
+   This command will restore the file to the state it was in the last commit.
+
+- Restore Staged Version of the File to its Last Committed Version
+
+   If you've added changes to the staging area (with `git add`) and want to unstage those changes and restore the file to its last committed version, you can do so with the following command:
+
+   ```shell
+   git restore --staged <filename>
+   ```
+
+   This command will unstage the changes and leave the file in your working directory untouched.
+
+### 7.5. Important Commands
+
+- `git init`: initialize a git repository in the current directory
+- `git add <file>`: add a file to the staging area
+- `git commit`: commit the staged files
+- `git status`: see the status of the current repository
+- `git merge <branch>`: merge the specified branch into the current branch
+- `git switch <branch>`: switch to the specified branch and update the working directory
+- `git switch -c <branch>`: create and switch to a new branch
+- `git branch`: list all the branches in the current repository
+- `git branch -d <branch>`: delete a branch`
+
+### 7.6. Commands for Local Repositories
+
+- `git log`: see the commit history
+- `git diff`: see the changes between commits, branches, etc.
+- `git branch <BRANCH_NAME>`: create a branch
+- `git branch -d <BRANCH_NAME>`: delete a branch
+- `git merge <BRANCH_NAME>`: merge a branch into the current branch
+
+### 7.7. Command for Remote Repositories
+
+- `git remote add <REMOTE_NAME> <REMOTE_URL>`: add a remote repository
+- `git push <REMOTE_NAME> <BRANCH_NAME>`: push a branch to a remote repository
+- `git pull <REMOTE_NAME> <BRANCH_NAME>`: pull a branch from a remote repository
+- `git clone <REMOTE_URL>`: clone a remote repository
+- `git fetch <REMOTE_NAME>`: fetch a remote repository
+- `git reset`: reset the staging area
+- `git revert`: revert a commit
+- `git stash`: stash changes
+- `git stash pop`: pop the most recent stash
+- `git stash list`: list all stashesexit
+- `git stash clear`: clear all stashes
+- `git config --global alias.<ALIAS_NAME> <COMMAND>`: create a custom alias
+- `git rebase <BRANCH_NAME>`: rebase a branch onto the current branch
+- `git tag <TAG_NAME>`: create a tag
+- `git tag -d <TAG_NAME>`: delete a tag
+- `git reflog`: see the reflog
+- `git reflog delete`: delete the reflog
+- `git reflog expire --expire-unreachable=now --all`: delete the reflog
+- `git reflog expire --expire=now --all`: delete the reflog
+
+### 7.8. Exercise Notes (Git and GitHub)
+
+Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
+
+If you choose to delete the branch, you can do so both locally and on the remote:
+
+1. Delete the branch locally:
+
+   ```shell
+   git branch -d <branch-name>
+   ```
+
+   If the branch hasn't been merged and you still want to delete it, you can force the deletion:
+
+   ```shell
+   git branch -D <branch-name>
+   ```
+
+2. Delete the branch on the remote:
+
+   ```shell
+   git push origin --delete <branch-name>
+   ```
+
+   Before you delete the branch, switch back to the main branch (usually `master` or `main`) or another branch:
+
+   ```shell
+   git switch <main-branch-name>
+   ```
+
+   Also, update your local main branch with the latest changes:
+
+   ```shell
+   git pull origin <main-branch-name>
+   ```
+
+Deleting a branch doesn't delete the commits on that branch, it simply removes the branch pointer. The commits are still in the Git repository and can be accessed directly via their commit hashes.
+
+You can use `git switch` followed by a commit hash to move the `HEAD` to a specific commit:
+
+```shell
+git switch <commit-hash>
+```
+
+Doing so will put you in a "detached HEAD" state, where you're not on any branch. Any new commits you make in this state won't be associated with any branch and will be lost once you switch back to a normal branch, unless you create a new branch while you're in the detached HEAD state:
+
+```shell
+git switch -c <new-branch-name>
+```
+
+Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
+
+## 8. TODO
 
 - Remove the title format from the lists in section 4 and 5
