@@ -13,21 +13,22 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [5. Stashing Changes](#5-stashing-changes)
   - [5.1. Introduction](#51-introduction)
   - [5.2. Stashing Commands](#52-stashing-commands)
-- [6. Unmodifying and Unstaging](#6-unmodifying-and-unstaging)
+- [6. Restore: Unstaging and Unmodifying](#6-restore-unstaging-and-unmodifying)
   - [6.1. Working with Staged Changes](#61-working-with-staged-changes)
   - [6.2. Working with Unstaged Changes](#62-working-with-unstaged-changes)
-  - [6.3. Working with Both Staged and Unstaged Changes](#63-working-with-both-staged-and-unstaged-changes)
-- [7. Examples](#7-examples)
-  - [7.1. Merge Branches, Not Commits](#71-merge-branches-not-commits)
-- [8. Other Notes](#8-other-notes)
-  - [8.1. Working Directory vs. Staging Area](#81-working-directory-vs-staging-area)
-  - [8.2. Git Workflow Diagram Explained](#82-git-workflow-diagram-explained)
-  - [8.3. Avoid Git Checkout](#83-avoid-git-checkout)
-  - [8.4. Important Commands](#84-important-commands)
-  - [8.5. Commands for Local Repositories](#85-commands-for-local-repositories)
-  - [8.6. Command for Remote Repositories](#86-command-for-remote-repositories)
-  - [8.7. Exercise Notes (Git and GitHub)](#87-exercise-notes-git-and-github)
-- [9. TODO](#9-todo)
+- [7. Reset (Unstage and Discard) and Revert](#7-reset-unstage-and-discard-and-revert)
+- [8. Examples](#8-examples)
+  - [8.1. Merge Branches, Not Commits](#81-merge-branches-not-commits)
+- [9. Other Notes](#9-other-notes)
+  - [9.1. Working Directory vs. Staging Area](#91-working-directory-vs-staging-area)
+  - [9.2. Git Workflow Diagram Explained](#92-git-workflow-diagram-explained)
+  - [9.3. Avoid Git Checkout](#93-avoid-git-checkout)
+  - [9.4. Remove Sensitive Information from Git History](#94-remove-sensitive-information-from-git-history)
+  - [9.5. Important Commands](#95-important-commands)
+  - [9.6. Commands for Local Repositories](#96-commands-for-local-repositories)
+  - [9.7. Command for Remote Repositories](#97-command-for-remote-repositories)
+  - [9.8. Exercise Notes (Git and GitHub)](#98-exercise-notes-git-and-github)
+- [10. TODO](#10-todo)
 
 ## 1. Git Core
 
@@ -276,7 +277,7 @@ When you stash your changes, it results in a "clean working tree." A **clean wor
    ```
 
 <!-- continuehere -->
-## 6. Unmodifying and Unstaging
+## 6. Restore: Unstaging and Unmodifying
 
 ### 6.1. Working with Staged Changes
 
@@ -286,7 +287,7 @@ When you stash your changes, it results in a "clean working tree." A **clean wor
     git restore --staged <filename>
     ```
 
-    This command will unstage the changes while leaving the file in your working directory as it is, preserving any changes you've made.
+    This command will unstage the changes while leaving the file in your working directory as it is, preserving any changes you've made. Note that `git reset` can also be used to unstage changes, but it's a more general command that can also be used to reset the state of your working directory to match a specific commit.
 
 ### 6.2. Working with Unstaged Changes
 
@@ -298,27 +299,47 @@ When you stash your changes, it results in a "clean working tree." A **clean wor
   
     This will remove any unstaged changes and make the file in your working directory match the staged version, which could be either the last committed version or a previously staged but uncommitted change.
 
-### 6.3. Working with Both Staged and Unstaged Changes
-
-- **Remove Both Unstaged and Staged Changes and Restore to Last Committed Version**: If you want to discard all changes (both staged and unstaged) and restore the file to its last committed version, use:
-
-    ```shell
-    git restore --source=HEAD <filename>
-    ```
-
-    This explicitly tells Git to restore the file to the last committed state based on `HEAD`, ignoring both staged and unstaged changes.
-
-- **Restore File to a Specific Past Commit**: To restore a file to the state from a specific past commit, use:
+- **Restore File to a Specific Past Commit**: To restore a file in the working directory to the state it was in at a specific past commit, use:
 
     ```shell
     git restore --source=<commit_hash> <filename>
     ```
 
-    This will restore the file to the state it was in at the specified commit, discarding all changes made to the file since then.
+    This command will restore the file in the working directory to the state it was in at the specified commit, discarding all unstaged changes made to the file since then. Note that this does not affect any changes that have been staged.
 
-## 7. Examples
+## 7. Reset (Unstage and Discard) and Revert
 
-### 7.1. Merge Branches, Not Commits
+- **Unstage Changes from the Staging Area**: If you've staged changes with `git add` and want to unstage those changes while leaving your working directory unaffected, use:
+
+    ```shell
+    git reset
+    ```
+
+    ⚠️ **Warning**: This command only affects the staging area, not your working directory. The changes you unstaged will move from the staging area back to your working directory.
+
+    💡 **Note**: You can also use `git reset` to move the HEAD and branch pointer to a specific past commit, effectively allowing you to create a new branch that starts at that commit.
+
+- **Discard All Uncommitted Changes (Destructive)**: If you wish to discard all changes in your working directory and staging area, reverting them to the state of the last commit, use:
+
+    ```shell
+    git reset --hard
+    ```
+
+    ⚠️ **Warning**: This is a destructive operation that will permanently discard all unstaged and staged changes. Your working directory and staging area will be reset to match the last committed state, based on `HEAD`.
+
+- **Revert a Commit**: To create a new commit that undoes the changes from a specific past commit, use:
+
+    ```shell
+    git revert <commit_hash>
+    ```
+
+    This will create a new commit that reverses the changes made in the specified commit. This is often the preferred method for undoing changes when collaborating with others, as it doesn't rewrite commit history.
+
+    **Note for Collaboration**: Using `git revert` is particularly useful when collaborating with others because it adds a new commit to reverse the changes, rather than altering existing commits. This makes it safer and more transparent when working on shared branches.
+
+## 8. Examples
+
+### 8.1. Merge Branches, Not Commits
 
 Imagine you have a repository with the following history (newest commits at the top):
 
@@ -374,9 +395,9 @@ If changes in `feature` conflict with changes in `main` since the common ancesto
 
 So when the statement says "we merge branches, not individual commits," it means the operation takes into account the series of commits that have occurred on the branches since their common ancestor. The merge operation attempts to integrate all of these changes into the `HEAD` branch ( `main` in this example).
 
-## 8. Other Notes
+## 9. Other Notes
 
-### 8.1. Working Directory vs. Staging Area
+### 9.1. Working Directory vs. Staging Area
 
 The term "working directory" refers to the *set of files and directories* in your local file system that is associated with a Git repository. These files represent the current state of your project and may include changes that are either staged or unstaged.
 
@@ -390,7 +411,7 @@ To conceptualize, consider your working directory as your "workspace" where you 
 
 In summary, the working directory contains both staged and unstaged changes, but it's helpful to think of the staged changes as being in a separate "staging area," awaiting to be committed to the repository.
 
-### 8.2. Git Workflow Diagram Explained
+### 9.2. Git Workflow Diagram Explained
 
 ```mermaid
 graph TD;
@@ -421,7 +442,7 @@ The above diagram illustrates the key areas of a Git workflow:
 
     - **Transition to Local Repository**: You can update your local repository to match the remote repository by running `git pull`, which fetches changes from the remote and merges them into your local repository.
 
-### 8.3. Avoid Git Checkout
+### 9.3. Avoid Git Checkout
 
 Avoiding git checkout in favor of more specialized commands is a good idea for clarity and specificity.
 
@@ -460,7 +481,70 @@ Avoiding git checkout in favor of more specialized commands is a good idea for c
 
 7. **Checking out submodules**: If you are working with submodules, instead of `git checkout` you might use a combination of `git submodule update` and other submodule commands.
 
-### 8.4. Important Commands
+### 9.4. Remove Sensitive Information from Git History
+
+If you've accidentally committed a file containing sensitive information (like a file containing credentials), and you want to remove it from your Git history while retaining your latest changes, you can follow these steps:
+
+**⚠️ WARNING: This will rewrite history, which can be dangerous if you're working on a shared branch. Make sure to consult with your team and proceed with caution.**
+
+1. **Backup Your Repository**: Before doing anything, backup the current state of your repository.
+
+    ```shell
+    cp -R your_repo your_repo_backup
+    ```
+
+2. **Untrack the File**: First untrack the file from Git.
+
+    ```shell
+    git rm --cached <filename>
+    ```
+
+3. **Commit this change**: Commit this change to your history.
+
+    ```shell
+    git commit -m "Untrack sensitive file"
+    ```
+
+4. **Add File to `.gitignore`**: Add the filename to your `.gitignore` to ensure it won't be accidentally committed again.
+
+    ```shell
+    echo '<filename>' >> .gitignore
+    ```
+
+5. **Commit `.gitignore` Change**: Stage and commit this change.
+
+    ```shell
+    git add .gitignore
+    git commit -m "Ignore sensitive file"
+    ```
+
+6. **Rewrite History**: Use the `filter-branch` command or `filter-repo` to actually remove the file from your entire commit history. Here's how you can do it with `filter-branch`:
+
+    ```shell
+    git filter-branch --force --index-filter \
+      "git rm --cached --ignore-unmatch <filename>" \
+      --prune-empty --tag-name-filter cat -- --all
+    ```
+
+    Note: `git filter-branch` is now a "deprecated" command, but it's still available for tasks like this. The recommended alternative is `git filter-repo`, which is more performant and flexible but has to be installed separately.
+
+7. **Force Push to Remote**: Once your local history is cleaned up, force-push the changes to your remote repository.
+
+    ```shell
+    git push origin --force --all
+    ```
+
+    **⚠️ CAUTION**: This is a destructive operation and will overwrite changes on the remote that you don't have locally. Make sure nobody has pushed to the remote repository after your last fetch.
+
+8. **Contact Collaborators**: If anyone else had pulled the repository while the sensitive data was in it, make sure they also remove their local history to prevent the data from being pushed again.
+
+9. **Rotate Credentials**: Since the credentials were exposed, it's good practice to consider them compromised and rotate them for new ones.
+
+Remember, once you've pushed a commit that contains sensitive information, you should consider that information compromised. Even if you remove the commit from your Git repository, GitHub keeps a log of recent changes, and there's no guarantee that someone hasn't cloned your repo and still has a copy of the sensitive data.
+
+This should help you remove the sensitive file from your Git history. Follow these steps carefully and consult your team when executing such tasks, as they have ramifications on everyone's local repositories.
+
+### 9.5. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git add <file>`: add a file to the staging area
@@ -472,7 +556,7 @@ Avoiding git checkout in favor of more specialized commands is a good idea for c
 - `git branch`: list all the branches in the current repository
 - `git branch -d <branch>`: delete a branch`
 
-### 8.5. Commands for Local Repositories
+### 9.6. Commands for Local Repositories
 
 - `git log`: see the commit history
 - `git diff`: see the changes between commits, branches, etc.
@@ -480,7 +564,7 @@ Avoiding git checkout in favor of more specialized commands is a good idea for c
 - `git branch -d <BRANCH_NAME>`: delete a branch
 - `git merge <BRANCH_NAME>`: merge a branch into the current branch
 
-### 8.6. Command for Remote Repositories
+### 9.7. Command for Remote Repositories
 
 - `git remote add <REMOTE_NAME> <REMOTE_URL>`: add a remote repository
 - `git push <REMOTE_NAME> <BRANCH_NAME>`: push a branch to a remote repository
@@ -502,7 +586,7 @@ Avoiding git checkout in favor of more specialized commands is a good idea for c
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-### 8.7. Exercise Notes (Git and GitHub)
+### 9.8. Exercise Notes (Git and GitHub)
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
@@ -554,6 +638,6 @@ git switch -c <new-branch-name>
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
 
-## 9. TODO
+## 10. TODO
 
 - Remove the title format from the lists in section 4 and 5
