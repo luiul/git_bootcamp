@@ -13,22 +13,25 @@ Collection of notes and exercises for learning how to use Git and Github.
 - [5. Stashing Changes](#5-stashing-changes)
   - [5.1. Introduction](#51-introduction)
   - [5.2. Stashing Commands](#52-stashing-commands)
-- [6. Restore: Unstaging and Unmodifying](#6-restore-unstaging-and-unmodifying)
-  - [6.1. Working with Staged Changes](#61-working-with-staged-changes)
-  - [6.2. Working with Unstaged Changes](#62-working-with-unstaged-changes)
-- [7. Reset (Unstage and Discard) and Revert](#7-reset-unstage-and-discard-and-revert)
-- [8. Examples](#8-examples)
-  - [8.1. Merge Branches, Not Commits](#81-merge-branches-not-commits)
-- [9. Other Notes](#9-other-notes)
-  - [9.1. Working Directory vs. Staging Area](#91-working-directory-vs-staging-area)
-  - [9.2. Git Workflow Diagram Explained](#92-git-workflow-diagram-explained)
-  - [9.3. Avoid Git Checkout](#93-avoid-git-checkout)
-  - [9.4. Remove Sensitive Information from Git History](#94-remove-sensitive-information-from-git-history)
-  - [9.5. Important Commands](#95-important-commands)
-  - [9.6. Commands for Local Repositories](#96-commands-for-local-repositories)
-  - [9.7. Command for Remote Repositories](#97-command-for-remote-repositories)
-  - [9.8. Exercise Notes (Git and GitHub)](#98-exercise-notes-git-and-github)
-- [10. TODO](#10-todo)
+- [6. Reset (Unstage and Discard) and Revert](#6-reset-unstage-and-discard-and-revert)
+- [7. Restore: Unstaging and Unmodifying](#7-restore-unstaging-and-unmodifying)
+  - [7.1. Working with Staged Changes](#71-working-with-staged-changes)
+  - [7.2. Working with Unstaged Changes](#72-working-with-unstaged-changes)
+- [8. Clean Working Directory](#8-clean-working-directory)
+- [9. GitHub Basics](#9-github-basics)
+  - [9.1. Pushing Changes to Remote](#91-pushing-changes-to-remote)
+- [10. Examples](#10-examples)
+  - [10.1. Merge Branches, Not Commits](#101-merge-branches-not-commits)
+- [11. Other Notes](#11-other-notes)
+  - [11.1. Working Directory vs. Staging Area](#111-working-directory-vs-staging-area)
+  - [11.2. Git Workflow Diagram Explained](#112-git-workflow-diagram-explained)
+  - [11.3. Avoid Git Checkout](#113-avoid-git-checkout)
+  - [11.4. Remove Sensitive Information from Git History](#114-remove-sensitive-information-from-git-history)
+  - [11.5. Important Commands](#115-important-commands)
+  - [11.6. Commands for Local Repositories](#116-commands-for-local-repositories)
+  - [11.7. Command for Remote Repositories](#117-command-for-remote-repositories)
+  - [11.8. Exercise Notes (Git and GitHub)](#118-exercise-notes-git-and-github)
+- [12. TODO](#12-todo)
 
 ## 1. Git Core
 
@@ -276,38 +279,7 @@ When you stash your changes, it results in a "clean working tree." A **clean wor
    git stash clear
    ```
 
-<!-- continuehere -->
-## 6. Restore: Unstaging and Unmodifying
-
-### 6.1. Working with Staged Changes
-
-- **Unstage Changes**: If you've staged changes with `git add` and want to unstage those changes, use:
-
-    ```shell
-    git restore --staged <filename>
-    ```
-
-    This command will unstage the changes while leaving the file in your working directory as it is, preserving any changes you've made. Note that `git reset` can also be used to unstage changes, but it's a more general command that can also be used to reset the state of your working directory to match a specific commit.
-
-### 6.2. Working with Unstaged Changes
-
-- **Remove Unstaged Changes and Match the Staged or Last Committed Version**: If you've made changes to a file but haven't staged them, and you want to undo these changes, you can:
-
-    ```shell
-    git restore <filename>
-    ```
-  
-    This will remove any unstaged changes and make the file in your working directory match the staged version, which could be either the last committed version or a previously staged but uncommitted change.
-
-- **Restore File to a Specific Past Commit**: To restore a file in the working directory to the state it was in at a specific past commit, use:
-
-    ```shell
-    git restore --source=<commit_hash> <filename>
-    ```
-
-    This command will restore the file in the working directory to the state it was in at the specified commit, discarding all unstaged changes made to the file since then. Note that this does not affect any changes that have been staged.
-
-## 7. Reset (Unstage and Discard) and Revert
+## 6. Reset (Unstage and Discard) and Revert
 
 - **Unstage Changes from the Staging Area**: If you've staged changes with `git add` and want to unstage those changes while leaving your working directory unaffected, use:
 
@@ -337,9 +309,111 @@ When you stash your changes, it results in a "clean working tree." A **clean wor
 
     **Note for Collaboration**: Using `git revert` is particularly useful when collaborating with others because it adds a new commit to reverse the changes, rather than altering existing commits. This makes it safer and more transparent when working on shared branches.
 
-## 8. Examples
+## 7. Restore: Unstaging and Unmodifying
 
-### 8.1. Merge Branches, Not Commits
+### 7.1. Working with Staged Changes
+
+- **Unstage Changes**: If you've staged changes with `git add` and want to unstage those changes, use:
+
+    shell
+
+    ```shell
+    git restore --staged <filename>
+    ```
+
+    ⚠️ **Warning**: Unstaging changes won't affect the changes in your working directory. Note that `git reset` can also be used to unstage changes, but it's a more general command that can also be used to reset the state of your working directory to match a specific commit.
+
+### 7.2. Working with Unstaged Changes
+
+- **Remove Unstaged Changes and Match the Staged or Last Committed Version**: If you've made changes to a file but haven't staged them, and you want to undo these changes, you can:
+
+    shell
+
+    ```shell
+    git restore <filename>
+    ```
+
+    ⚠️ **Warning**: Using this command will remove any unstaged changes, making the file in your working directory match the staged version. **Be cautious, as any unsaved changes will be lost**. This could revert the file to the last committed version or a previously staged but uncommitted change.
+
+- **Restore File to a Specific Past Commit**: To restore a file in the working directory to the state it was in at a specific past commit, use:
+
+    shell
+
+    ```shell
+    git restore --source=<commit_hash> <filename>
+    ```
+
+    ⚠️ **Warning**: Exercise caution when using this command. It will restore the file in the working directory to the state it was in at the specified commit, discarding all unstaged changes made to the file since then. This operation is irreversible and can lead to data loss. Note that this does not affect any changes that have been staged.
+
+## 8. Clean Working Directory
+
+A **clean working directory** means that there are no changes that are staged (in the staging area) or unstaged (in the working directory). Having a clean working directory is often necessary for various Git operations, like pulling from a remote repository or switching to a different branch that has conflicting changes.
+
+If you want to remove untracked files (files that are not yet tracked by Git), you can use the `git clean` command.
+
+- **Dry Run:** Before actually removing any files, you can do a dry run to see which files would be removed:
+
+    bash
+
+    ```bash
+    git clean -n
+    ```
+
+- **Remove Untracked Files:** Once you're sure about which files to remove, you can use the following command to remove all untracked files:
+
+    bash
+
+    ```bash
+    git clean -f
+    ```
+
+- **Remove Untracked Directories:** If you want to remove untracked directories as well, you can use:
+
+    bash
+
+    ```bash
+    git clean -f -d
+    ```
+
+**Caution:** `git clean` is a destructive operation. Once you remove untracked files/directories using this command, you can't recover them unless you have a backup elsewhere. Always double-check and maybe even back up important data before using this command.
+
+## 9. GitHub Basics
+
+GitHub is a hosting platform for Git repositories. It provides a web-based graphical interface and tools for collaboration. It also provides additional features like issue tracking, pull requests, and more.
+
+### 9.1. Pushing Changes to Remote
+
+The `git push` command is used to update a remote repository with your local commits. It takes your local repository changes and "pushes" them to a remote repository that you have write access to. This is how team members share changes with each other in a distributed version control system like Git.
+
+- **Basic Syntax**: The basic syntax for `git push` is as follows:
+
+    ```shell
+    git push <remote> <local_branch>
+    ```
+
+  - `<remote>`: This is the name of the remote repository. By default, the original remote is named `origin`.
+
+  - `<local_branch>`: This is the name of the local branch that you want to push to the remote repository. By default, the remote branch will have the same name, but you can specify a different name if you wish (see below).
+
+- **Naming the Remote Branch**: If you want to push your local branch to a remote branch with a different name, you can specify it using the following syntax:
+
+    ```shell
+    git push <remote> <local_branch>:<remote_branch>
+    ```
+
+- **Default Behavior**: If you simply run `git push` without specifying the remote and branch, Git will use the configuration that was set up when you cloned the repository or added the remote. Typically, it will push the current branch to the corresponding remote branch that `git pull` would pull from (this is often the same-named branch on the `origin` remote).
+
+- **Set Upstream**: You can also set an "upstream" branch, which configures which remote branch corresponds to the local branch. Once you've set an upstream branch, you can use `git push` without any arguments while on that branch:
+
+    ```shell
+    git push -u <remote> <local_branch>
+    ```
+
+    The `-u` flag sets the upstream for the branch, so future calls to `git push` or `git pull` can be done without specifying the branch.
+
+## 10. Examples
+
+### 10.1. Merge Branches, Not Commits
 
 Imagine you have a repository with the following history (newest commits at the top):
 
@@ -395,9 +469,9 @@ If changes in `feature` conflict with changes in `main` since the common ancesto
 
 So when the statement says "we merge branches, not individual commits," it means the operation takes into account the series of commits that have occurred on the branches since their common ancestor. The merge operation attempts to integrate all of these changes into the `HEAD` branch ( `main` in this example).
 
-## 9. Other Notes
+## 11. Other Notes
 
-### 9.1. Working Directory vs. Staging Area
+### 11.1. Working Directory vs. Staging Area
 
 The term "working directory" refers to the *set of files and directories* in your local file system that is associated with a Git repository. These files represent the current state of your project and may include changes that are either staged or unstaged.
 
@@ -411,7 +485,7 @@ To conceptualize, consider your working directory as your "workspace" where you 
 
 In summary, the working directory contains both staged and unstaged changes, but it's helpful to think of the staged changes as being in a separate "staging area," awaiting to be committed to the repository.
 
-### 9.2. Git Workflow Diagram Explained
+### 11.2. Git Workflow Diagram Explained
 
 ```mermaid
 graph TD;
@@ -442,7 +516,7 @@ The above diagram illustrates the key areas of a Git workflow:
 
     - **Transition to Local Repository**: You can update your local repository to match the remote repository by running `git pull`, which fetches changes from the remote and merges them into your local repository.
 
-### 9.3. Avoid Git Checkout
+### 11.3. Avoid Git Checkout
 
 Avoiding git checkout in favor of more specialized commands is a good idea for clarity and specificity.
 
@@ -481,7 +555,7 @@ Avoiding git checkout in favor of more specialized commands is a good idea for c
 
 7. **Checking out submodules**: If you are working with submodules, instead of `git checkout` you might use a combination of `git submodule update` and other submodule commands.
 
-### 9.4. Remove Sensitive Information from Git History
+### 11.4. Remove Sensitive Information from Git History
 
 If you've accidentally committed a file containing sensitive information (like a file containing credentials), and you want to remove it from your Git history while retaining your latest changes, you can follow these steps:
 
@@ -544,7 +618,7 @@ Remember, once you've pushed a commit that contains sensitive information, you s
 
 This should help you remove the sensitive file from your Git history. Follow these steps carefully and consult your team when executing such tasks, as they have ramifications on everyone's local repositories.
 
-### 9.5. Important Commands
+### 11.5. Important Commands
 
 - `git init`: initialize a git repository in the current directory
 - `git add <file>`: add a file to the staging area
@@ -556,27 +630,27 @@ This should help you remove the sensitive file from your Git history. Follow the
 - `git branch`: list all the branches in the current repository
 - `git branch -d <branch>`: delete a branch`
 
-### 9.6. Commands for Local Repositories
+### 11.6. Commands for Local Repositories
 
 - `git log`: see the commit history
 - `git diff`: see the changes between commits, branches, etc.
 - `git branch <BRANCH_NAME>`: create a branch
 - `git branch -d <BRANCH_NAME>`: delete a branch
 - `git merge <BRANCH_NAME>`: merge a branch into the current branch
+  - - `git reset`: reset the staging area
+- `git revert`: revert a commit
+- `git stash`: stash changes
+- `git stash pop`: pop the most recent stash
+- `git stash list`: list all stashesexit
+- `git stash clear`: clear all stashes
 
-### 9.7. Command for Remote Repositories
+### 11.7. Command for Remote Repositories
 
 - `git remote add <REMOTE_NAME> <REMOTE_URL>`: add a remote repository
 - `git push <REMOTE_NAME> <BRANCH_NAME>`: push a branch to a remote repository
 - `git pull <REMOTE_NAME> <BRANCH_NAME>`: pull a branch from a remote repository
 - `git clone <REMOTE_URL>`: clone a remote repository
 - `git fetch <REMOTE_NAME>`: fetch a remote repository
-- `git reset`: reset the staging area
-- `git revert`: revert a commit
-- `git stash`: stash changes
-- `git stash pop`: pop the most recent stash
-- `git stash list`: list all stashesexit
-- `git stash clear`: clear all stashes
 - `git config --global alias.<ALIAS_NAME> <COMMAND>`: create a custom alias
 - `git rebase <BRANCH_NAME>`: rebase a branch onto the current branch
 - `git tag <TAG_NAME>`: create a tag
@@ -586,7 +660,7 @@ This should help you remove the sensitive file from your Git history. Follow the
 - `git reflog expire --expire-unreachable=now --all`: delete the reflog
 - `git reflog expire --expire=now --all`: delete the reflog
 
-### 9.8. Exercise Notes (Git and GitHub)
+### 11.8. Exercise Notes (Git and GitHub)
 
 Once your pull request has been approved and merged into the main branch, you typically don't need the pull request branch anymore. You can delete it to keep your repository tidy. However, depending on your team's workflow and policies, you might want to keep the branch for a while for reference or in case additional changes or fixes are needed.
 
@@ -638,6 +712,6 @@ git switch -c <new-branch-name>
 
 Please note that commits not reachable by any branch or tag may be deleted by Git's garbage collection process. If you want to keep these commits, you should create a new branch to point to them.
 
-## 10. TODO
+## 12. TODO
 
 - Remove the title format from the lists in section 4 and 5
